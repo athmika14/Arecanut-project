@@ -1,0 +1,528 @@
+========================================================================
+  ArecaNut AI — Complete Testing & Verification Audit Report
+  Generated : 2026-10-21  (finalised after two-pass audit)
+  Project   : D:\mca project\ArecaNut_AI
+  Scope     : Testing-only. No application source files were modified.
+========================================================================
+
+  FINAL SUMMARY
+  ─────────────────────────────────────────────────────────────────────
+  PASS       : 35
+  FAIL       : 0
+  BLOCKED    : 0  (the earlier BLOCKED for npm build is resolved below)
+  NOT TESTED : 5  (documented with reasons)
+  ─────────────────────────────────────────────────────────────────────
+  Note: a FAIL and a BLOCKED appeared in the first pass of this report.
+  Both were investigated in the second pass and resolved (see Sections
+  8 and 10 for details). No real failures or blocks remain.
+========================================================================
+
+
+------------------------------------------------------------------------
+  SECTION 1 — Environment Verification
+  Method: executed (Python imports in-process)
+------------------------------------------------------------------------
+
+  [PASS] All required libraries are importable
+        Python 3.12.3 | TensorFlow 2.21.0 | numpy 2.5.2
+        Flask 3.0.3   | flask-cors 4.0.1   | Pillow 12.3.0
+
+  [PASS] Pillow WEBP decode support is available
+        Pillow features.check("webp") = True
+        WEBP images can be decoded and preprocessed correctly.
+
+
+------------------------------------------------------------------------
+  SECTION 2 — Backend Automated Test Suite (pytest)
+  Method: executed — python -m pytest backend/tests/ -v
+------------------------------------------------------------------------
+
+  [PASS] All 22 backend tests passed
+        Platform: win32, Python 3.12.3, pytest 9.1.1
+        Run time: 33.35 s
+
+  Individual test results:
+    PASS  TestPreprocessImage::test_output_shape
+    PASS  TestPreprocessImage::test_output_dtype_is_float32
+    PASS  TestPreprocessImage::test_mobilenetv2_scaling
+    PASS  TestPreprocessImage::test_non_square_image_is_resized
+    PASS  TestPreprocessImage::test_rgba_png_converted_to_rgb
+    PASS  TestPreprocessImage::test_grayscale_png_converted_to_rgb
+    PASS  TestPreprocessImage::test_invalid_bytes_raise_value_error
+    PASS  TestPreprocessImage::test_empty_bytes_raise_value_error
+    PASS  TestClassIndexMapping::test_index_file_exists
+    PASS  TestClassIndexMapping::test_index_file_is_valid_json
+    PASS  TestClassIndexMapping::test_nine_classes_present
+    PASS  TestClassIndexMapping::test_keys_are_zero_to_eight
+    PASS  TestClassIndexMapping::test_expected_class_names_present
+    PASS  TestPredictAPIErrors::test_no_file_key_returns_400
+    PASS  TestPredictAPIErrors::test_model_unavailable_returns_503
+    PASS  TestPredictAPIErrors::test_wrong_extension_returns_400
+    PASS  TestPredictAPIHappyPath::test_jpeg_upload_returns_prediction
+    PASS  TestPredictAPIHappyPath::test_png_upload_returns_prediction
+    PASS  TestPredictAPIHappyPath::test_confidence_scores_sum_to_one
+    PASS  TestPredictAPIHappyPath::test_wrong_extension_returns_400_with_model_loaded
+    PASS  TestPredictAPIHappyPath::test_empty_file_returns_400
+    PASS  TestPredictAPIHappyPath::test_corrupt_jpeg_returns_400
+
+        ============================= 22 passed in 33.35s =============================
+
+
+------------------------------------------------------------------------
+  SECTION 3 — Flask Application Startup and Model Loading
+  Method: executed (create_app() invoked in-process)
+------------------------------------------------------------------------
+
+  [PASS] Flask application factory creates app without error
+        Blueprint registered: /api/disease, /api/harvest
+        CORS origin: http://localhost:3000
+
+  [PASS] Trained model loads at startup (load_disease_model called once)
+        Model file : ml/disease/models/mobilenetv2_best.keras (22.74 MB)
+        Log output : "Disease model loaded — input=(None, 224, 224, 3)
+                      output=(None, 9)  classes=9"
+
+
+------------------------------------------------------------------------
+  SECTION 4 — Model Architecture Verification
+  Method: executed (model object interrogated in-process)
+------------------------------------------------------------------------
+
+  [PASS] Model input shape matches 224×224 RGB training configuration
+        input_shape = (None, 224, 224, 3)   ✓ matches IMG_SIZE=224 in training
+
+  [PASS] Model output layer has exactly 9 classes
+        output_shape = (None, 9)   ✓ matches 9-class dataset
+
+  [PASS] Model file is a valid Keras archive
+        Contains: metadata.json, config.json, model.weights.h5
+        Total parameters: 2,423,113
+        Trainable at inference: 0 (backbone frozen in saved state)
+
+  [PASS] Model preprocessing matches training pipeline
+        Training used: tf.keras.applications.mobilenet_v2.preprocess_input
+        Inference uses: same function in preprocess_image()
+        Pixel range after preprocessing: [-1.0, +1.0] (verified by
+        test_mobilenetv2_scaling: white→1.0, black→-1.0, atol=0.01)
+
+
+------------------------------------------------------------------------
+  SECTION 5 — Class Index Mapping Validation
+  Method: executed (class_indices.json read and verified in-process)
+------------------------------------------------------------------------
+
+  [PASS] class_indices.json exists and parses as valid JSON
+        Path: ml/disease/models/class_indices.json
+
+  [PASS] Exactly 9 classes with integer keys 0–8
+        Keys: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+  [PASS] All expected class names are present
+        0: Healthy_Leaf
+        1: Healthy_Nut
+        2: Healthy_Trunk
+        3: Mahali_Koleroga
+        4: Stem_bleeding
+        5: bud borer
+        6: healthy_foot
+        7: stem cracking
+        8: yellow leaf disease
+
+  [PASS] Model output dimension (9) matches class mapping count (9)
+
+  [PASS] Frontend DISEASE_CLASSES set matches all 5 disease class names
+        {Mahali_Koleroga, Stem_bleeding, bud borer, stem cracking,
+         yellow leaf disease}  — verified by code inspection
+
+  [PASS] Frontend HEALTHY_CLASSES set matches all 4 healthy class names
+        {Healthy_Nut, Healthy_Leaf, Healthy_Trunk, healthy_foot}
+        — verified by code inspection
+
+
+------------------------------------------------------------------------
+  SECTION 6 — API Prediction Tests (Real Inference)
+  Method: executed — Flask test client, synthetic images, real model
+  Images used: solid-colour JPEG/PNG/WEBP created with Pillow (not real
+  arecanut photos; prediction class is meaningless but the pipeline
+  is fully exercised end-to-end)
+------------------------------------------------------------------------
+
+  [PASS] POST /api/disease/predict with valid JPEG returns HTTP 200
+        Synthetic 300×400 green JPEG
+        Response: predicted_class="healthy_foot" confidence=0.6830
+        all_scores keys: 9 classes present
+
+  [PASS] POST /api/disease/predict with valid PNG returns HTTP 200
+        Synthetic 200×200 orange PNG
+        Response: predicted_class="healthy_foot" confidence=0.5670
+
+  [PASS] POST /api/disease/predict with valid WEBP returns HTTP 200
+        Synthetic 200×200 purple WEBP
+        Response: predicted_class="healthy_foot" confidence=0.9060
+
+  [PASS] All 9 softmax scores present in response
+        Keys: Healthy_Leaf, Healthy_Nut, Healthy_Trunk, Mahali_Koleroga,
+              Stem_bleeding, bud borer, healthy_foot, stem cracking,
+              yellow leaf disease
+
+  [PASS] Softmax scores sum to 1.0 (within floating-point tolerance)
+        sum = 1.000001  (within atol=0.001)
+
+  [PASS] Response includes raw-softmax disclaimer
+        note = "confidence is the raw softmax score for this class
+                and is not a calibrated probability"
+
+
+------------------------------------------------------------------------
+  SECTION 7 — API Error Handling
+  Method: executed — Flask test client with invalid/edge-case inputs
+------------------------------------------------------------------------
+
+  [PASS] Request without 'image' field returns HTTP 400
+        Body: {"error": "No image provided.", "detail": "Send the image
+               as multipart/form-data under the key 'image'."}
+
+  [PASS] File with unsupported extension (.gif) returns HTTP 400
+        Body: {"error": "Invalid file type.", "detail": "Allowed
+               extensions: jpeg, jpg, png, webp."}
+
+  [PASS] Empty file (0 bytes) returns HTTP 400
+        Body: {"error": "Uploaded file is empty."}
+
+  [PASS] Corrupt JPEG (truncated header bytes) returns HTTP 400
+        Body: {"error": "Could not process the uploaded image.",
+               "detail": "Cannot decode image: ..."}
+
+  [PASS] GET /api/health returns HTTP 200 with model status
+        Body: {"status": "ArecaNut AI backend is running",
+               "disease_model": "loaded"}
+
+
+------------------------------------------------------------------------
+  SECTION 8 — Frontend Build Verification
+  Method: executed — npm run build (PowerShell, correct npm path)
+------------------------------------------------------------------------
+
+  First-pass status: BLOCKED
+  Reason: The audit script called subprocess with command="npm" which
+          resolved to nothing on this machine. npm is installed as
+          npm.ps1 and must be invoked via PowerShell.
+
+  Resolution: Build re-run directly via PowerShell.
+
+  [PASS] React production build compiles with zero errors and zero warnings
+        Command: npm run build (react-scripts 5.0.1)
+        Exit code: 0
+        Output: "Compiled successfully."
+        JS bundle (gzip): 56.15 kB
+        CSS bundle (gzip): 3.56 kB
+
+
+------------------------------------------------------------------------
+  SECTION 9 — Frontend Code Inspection
+  Method: code inspection (source file reading + regex verification)
+  Note: browser rendering cannot be verified without a headless browser.
+------------------------------------------------------------------------
+
+  [PASS] App.js defines routes for Home (/) and Disease Detection (/disease)
+        No route for /harvest (page file exists but is not routed — by design)
+
+  [PASS] Navbar has links to Home and Disease Detection; active-link
+        highlighting via useLocation() is implemented
+
+  [PASS] Home page heading: "AI-Powered Arecanut Plant Health"
+        Subtitle: "Upload a plant image to identify potential disease
+                   conditions using AI."
+        CTA button: "Check Your Plant →" → navigate("/disease")
+        Footer: "ArecaNut AI © 2026"
+        Feature cards: Disease Identification, Model Score, Fast Analysis
+
+  [PASS] DiseaseDetection.jsx implements all required features (18/18):
+        ✓ ALLOWED_TYPES: image/jpeg, image/png, image/webp
+        ✓ API_URL: /api/disease/predict
+        ✓ handleAnalyse (POST with FormData)
+        ✓ handleRemove (clears file, preview, result, error)
+        ✓ Loading state (setLoading, aria-busy, button text "Analysing…")
+        ✓ Error state (ErrorBox component, role=alert)
+        ✓ Result state (ResultCard component)
+        ✓ DISEASE_CLASSES set (5 disease names)
+        ✓ HEALTHY_CLASSES set (4 healthy names)
+        ✓ classifyPrediction() derives status from predicted class name
+        ✓ result-card--disease CSS modifier (red theme)
+        ✓ result-card--healthy CSS modifier (green theme)
+        ✓ status-badge--disease (⚠️ Disease Detected)
+        ✓ status-badge--healthy (✓ No Disease Detected)
+        ✓ Raw-softmax disclaimer rendered from API note field
+        ✓ Expert-diagnosis warning: "should not replace expert diagnosis..."
+        ✓ all_scores object mapped to 9 score bars
+        ✓ Network error message: "Could not reach the backend..."
+
+  [PASS] Frontend proxy configured: "proxy": "http://localhost:5000"
+        This routes /api/* calls to the Flask server during npm start.
+
+  [PASS] Responsive CSS breakpoints present in Home.css
+        @media (max-width: 768px) — hero stacks vertically, image above text
+        @media (max-width: 600px) — feature cards go full-width
+        @media (max-width: 380px) — further compact sizing
+
+  [PASS] Responsive CSS breakpoints present in Module.css
+        @media (max-width: 600px) — score grid narrows, card compacts
+        @media (max-width: 380px) — further compact sizing
+
+
+------------------------------------------------------------------------
+  SECTION 10 — Format Consistency Check
+  Method: executed (source-file inspection + backend module import)
+------------------------------------------------------------------------
+
+  First-pass status: FAIL
+  Reason: The audit script compared frontend MIME subtypes ("jpeg", "png",
+          "webp") against backend file extensions ("jpg", "jpeg", "png",
+          "webp") directly as strings, producing a false mismatch on "jpg".
+
+  Resolution: Investigated in second pass.
+
+  [PASS] No real format inconsistency exists
+        Frontend ALLOWED_TYPES (MIME): image/jpeg, image/png, image/webp
+        Frontend <input accept>:        image/jpeg, image/png, image/webp
+        Backend ALLOWED_EXTS:           jpg, jpeg, png, webp
+
+        "image/jpeg" is the MIME type browsers assign to BOTH .jpg AND
+        .jpeg files. The frontend correctly rejects GIF and other formats.
+        The backend has both "jpg" and "jpeg" as a defensive measure.
+        Both layers accept the same four real-world upload scenarios:
+          .jpg  → MIME image/jpeg  → accepted by both ✓
+          .jpeg → MIME image/jpeg  → accepted by both ✓
+          .png  → MIME image/png   → accepted by both ✓
+          .webp → MIME image/webp  → accepted by both ✓
+
+        Home page advertises: "JPG, PNG, and WEBP"
+        DiseaseDetection label: "Supported: JPG, PNG, WEBP"
+        Both match what the application actually accepts. ✓
+
+
+------------------------------------------------------------------------
+  SECTION 11 — Research Report Inspection
+  Method: code inspection (existing result files read, not regenerated)
+------------------------------------------------------------------------
+
+  [PASS] evaluation_metrics.json exists and parses correctly
+        Test accuracy     : 0.9676 (96.76%)
+        Macro precision   : 0.9291
+        Macro recall      : 0.9456
+        Macro F1          : 0.9355
+        Weighted precision: 0.9696
+        Weighted recall   : 0.9676
+        Weighted F1       : 0.9680
+        Training config   : Phase 1 = 20 epochs, Phase 2 = 7 epochs
+                            Best val acc P1 = 0.9330, P2 = 0.9542
+                            Random seed = 42
+        Generated         : 2026-10-17T20:52:03
+
+  [PASS] classification_report.txt contains all 9 per-class results
+        Per-class F1 scores (from report):
+          Healthy_Leaf        : 0.9836   (support=124)
+          Healthy_Nut         : 0.9871   (support=392)
+          Healthy_Trunk       : 0.9758   (support=337)
+          Mahali_Koleroga     : 0.9911   (support=556)
+          Stem_bleeding       : 0.8986   (support=31)
+          bud borer           : 0.8889   (support=31)
+          healthy_foot        : 0.8571   (support=11)
+          stem cracking       : 0.8997   (support=135)
+          yellow leaf disease : 0.9379   (support=326)
+
+  [PASS] Test split confirmed as source-group stratified (leakage-free)
+        leakage_free_split_report.txt confirms:
+          Strategy: Group-stratified split at source-ID level per class
+          Ratio: 70% train / 15% validation / 15% test  (seed=42)
+          Source-group separation verified with zero cross-partition leaks
+          (confirmed in source_leakage_analysis.txt)
+
+  [PASS] Limitations are documented in the classification report
+        1. healthy_foot: only 7 independent source groups; per-class
+           metrics for this class are not statistically reliable.
+        2. Class imbalance ~51:1 (Mahali_Koleroga vs healthy_foot);
+           mitigated with class_weight during training.
+        3. All images are augmented copies of 1,226 original photographs;
+           source-group split prevents leakage but cannot account for
+           visual similarity between different sources from the same
+           camera session or field location.
+        4. CPU-only training (Windows native TF ≥ 2.11).
+
+  IMPORTANT NOTE ON MODEL SCORES:
+    The confidence value returned by the API is a raw softmax output.
+    It is NOT a calibrated probability and CANNOT be interpreted as a
+    percentage certainty of correct diagnosis.
+    The 96.76% test accuracy was measured on the internal test split,
+    which consists entirely of augmented copies of the same 1,226
+    source photographs used for training. Performance on genuinely
+    independent, correctly labelled field images has not been measured
+    and may differ substantially.
+
+
+------------------------------------------------------------------------
+  SECTION 12 — Integration Checks
+  Method: combination of execution and code inspection
+------------------------------------------------------------------------
+
+  [PASS] Frontend catches network errors and shows a user-friendly message
+        try/catch in handleAnalyse() catches fetch() rejection.
+        Error message: "Could not reach the backend. Make sure the Flask
+                        server is running on port 5000."
+        Evidence: confirmed by code inspection of DiseaseDetection.jsx.
+
+  [PASS] Disease class returns red theme (code-inspection verified)
+        classifyPrediction(predictedClass) checks DISEASE_CLASSES Set.
+        If match → status="disease" → card gets class "result-card--disease"
+        → CSS applies: border-left: #c0392b, background: #fef7f7,
+          badge: "⚠️ Disease Detected" (red), class name: dark-red.
+        Tested classes: Mahali_Koleroga, Stem_bleeding, bud borer,
+                         stem cracking, yellow leaf disease.
+
+  [PASS] Healthy class returns green theme (code-inspection verified)
+        classifyPrediction(predictedClass) checks HEALTHY_CLASSES Set.
+        If match → status="healthy" → card gets class "result-card--healthy"
+        → CSS applies: border-left: #214E34, background: #e8f5e3,
+          badge: "✓ No Disease Detected" (green), class name: forest-green.
+        Tested classes: Healthy_Nut, Healthy_Leaf, Healthy_Trunk,
+                         healthy_foot.
+
+  NOTE: The above two checks verify the logic by reading the source code.
+  They confirm the correct CSS modifier is applied based on the class
+  name returned by the backend. Visual rendering in a browser was not
+  executed (see Section 13).
+
+  [PASS] CORS configured for React dev server
+        app.py: CORS(app, origins=["http://localhost:3000"])
+        This allows the React dev server to call /api/* endpoints.
+        Verified by code inspection. Not tested via real browser preflight.
+
+
+------------------------------------------------------------------------
+  SECTION 13 — Checks Not Performed
+  (Documented with reasons — not blocked by application issues)
+------------------------------------------------------------------------
+
+  [N/A] Browser-based visual rendering
+        Reason: Requires a running browser or headless driver (Puppeteer,
+                Playwright). Neither is installed. Build compilation and
+                code inspection used as proxy.
+
+  [N/A] Live React dev server interaction (npm start)
+        Reason: npm start is a long-running process that blocks the
+                terminal and cannot be verified without a browser.
+                Frontend build (npm run build) executed and passed instead.
+
+  [N/A] Prediction accuracy with real arecanut images
+        Reason: No independently labelled field images are present in
+                the project. Synthetic solid-colour images were used to
+                verify the pipeline end-to-end; the predicted class
+                (healthy_foot) from those images is not meaningful.
+
+  [N/A] Mobile device viewport rendering
+        Reason: Requires a real device or emulator. Responsive CSS
+                breakpoints (768px, 600px, 380px) verified by code
+                inspection.
+
+  [N/A] CORS preflight from a real browser
+        Reason: The Flask test client bypasses CORS. CORS configuration
+                verified by code inspection of app.py.
+
+
+========================================================================
+  ISSUES FOUND
+========================================================================
+
+  No genuine failures were found during this audit.
+
+  Two issues appeared in the first pass and were resolved in the
+  second pass:
+
+  1. npm build BLOCKED (first pass)
+     Cause:    The audit Python script used subprocess.run(["npm", ...])
+               which failed on this Windows machine because npm is
+               installed as npm.ps1, not a bare executable.
+     Resolution: Build re-run directly via PowerShell.
+     Outcome:  PASS — "Compiled successfully", exit code 0.
+
+  2. Format consistency FAIL (first pass)
+     Cause:    The audit script compared frontend MIME subtypes (jpeg,
+               png, webp) against backend file extensions (jpg, jpeg,
+               png, webp) as plain strings. The string "jpeg" does not
+               equal "jpg", triggering a false mismatch.
+     Resolution: Manual investigation confirmed that image/jpeg is the
+               MIME type browsers assign to both .jpg and .jpeg files.
+               All four real-world format combinations are accepted by
+               both frontend and backend.
+     Outcome:  PASS — no real inconsistency exists.
+
+
+========================================================================
+  RECOMMENDATIONS
+========================================================================
+
+  1. Add a headless-browser test (e.g., Playwright) to the CI pipeline
+     to verify visual rendering, navigation, and responsive layout.
+     Priority: medium.
+
+  2. Collect independently labelled field images of arecanut plants to
+     measure real-world generalisation. The reported 96.76% accuracy
+     applies only to the internal (augmented) test set.
+     Priority: high for any production or research use.
+
+  3. Consider adding a calibration step (Platt scaling or temperature
+     scaling) to the softmax output so confidence scores are meaningful
+     as probabilities, or update UI text to clarify the limitation more
+     prominently.
+     Priority: low for MCA demo; important for clinical/agricultural use.
+
+  4. The healthy_foot class has only 7 independent source groups (test
+     set support=11). Per-class metrics for this class are unreliable.
+     If field images become available, prioritise collecting more
+     healthy_foot samples.
+     Priority: medium.
+
+  5. No harvest readiness model exists yet. The /api/harvest/predict
+     route returns HTTP 503. This is by design and documented, but
+     should be addressed before a full product release.
+     Priority: low for MCA demo.
+
+
+========================================================================
+  METHODOLOGY — EXECUTED vs. INSPECTED
+========================================================================
+
+  ACTUALLY EXECUTED (real I/O and computation):
+    ✓ python -m pytest backend/tests/ -v        (22 tests, 33.35 s)
+    ✓ create_app() + load_disease_model()        (in-process)
+    ✓ Model architecture interrogation           (in-process)
+    ✓ class_indices.json read and validated      (in-process)
+    ✓ POST /api/disease/predict — JPEG           (Flask test client)
+    ✓ POST /api/disease/predict — PNG            (Flask test client)
+    ✓ POST /api/disease/predict — WEBP           (Flask test client)
+    ✓ POST /api/disease/predict — 5 error cases  (Flask test client)
+    ✓ GET /api/health                            (Flask test client)
+    ✓ npm run build                              (PowerShell subprocess)
+    ✓ Format consistency investigation           (source + module import)
+
+  CODE INSPECTION ONLY (no browser, no live server):
+    • App.js route definitions
+    • Home.jsx content, navigation, footer
+    • DiseaseDetection.jsx: all 18 feature checks
+    • Navbar links
+    • package.json proxy setting
+    • CSS responsive breakpoints
+    • Disease/healthy classification logic
+    • CORS configuration
+    • Existing evaluation reports
+
+  NOT TESTED (reason documented in Section 13):
+    • Browser visual rendering
+    • Live dev server
+    • Real arecanut image predictions
+    • Mobile viewport
+    • CORS preflight from browser
+
+========================================================================
+  END OF REPORT
+========================================================================

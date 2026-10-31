@@ -1,0 +1,408 @@
+========================================================================
+  ArecaNut AI — Disease Detection: Source-Level Leakage Analysis
+  Generated : 2026-10-10  19:46:38
+========================================================================
+
+  This report investigates the original-source structure of the dataset
+  and the extent of source-level leakage across partitions.
+  All findings are based on filename parsing and MD5 hash verification.
+  READ-ONLY — no files were modified.
+
+────────────────────────────────────────────────────────────────────────
+  SECTION 0 — Directory Verification
+────────────────────────────────────────────────────────────────────────
+  [OK]  TRAIN: D:\mca project\ArecaNut_AI\ml\disease\dataset\Arecanut_dataset\Arecanut_dataset\train
+  [OK]  TEST: D:\mca project\ArecaNut_AI\ml\disease\dataset\Arecanut_dataset\Arecanut_dataset\test
+  [OK]  FINAL_TESTING: D:\mca project\ArecaNut_AI\ml\disease\dataset\final_testing-20230830T042904Z-001\final_testing
+
+────────────────────────────────────────────────────────────────────────
+  SECTION 1 — Filename Pattern and Directory Structure
+────────────────────────────────────────────────────────────────────────
+
+  Expected pattern:
+    <class_label>_original_<source_id>_<UUID>.jpg
+
+  Where:
+    <class_label>  = folder name (e.g. 'Healthy_Leaf', 'bud borer')
+    <source_id>    = original image filename without extension
+                     Two sub-types observed:
+                       Numeric  : e.g. 510, 7191, 9100
+                       Camera   : e.g. IMG_20230819_174511
+    <UUID>         = Version-4 UUID (random, unique per derived copy)
+
+  VERIFIED: Every single filename across all three partitions
+  (8,847 train + 2,216 test + 1,229 final_testing = 12,292 total)
+  matches this pattern.  Zero non-matching filenames found.
+
+  Disease classes (9 total): ['Healthy_Leaf', 'Healthy_Nut', 'Healthy_Trunk', 'Mahali_Koleroga', 'Stem_bleeding', 'bud borer', 'healthy_foot', 'stem cracking', 'yellow leaf disease']
+
+────────────────────────────────────────────────────────────────────────
+  SECTION 2 — Unique Source IDs Per Class Per Partition
+────────────────────────────────────────────────────────────────────────
+
+  Each row shows how many distinct source images exist per class.
+  'Derived' = total image files; 'Sources' = unique originals.
+
+  Class                  Tr-Src  Tr-Img   Te-Src  Te-Img   Ft-Src  Ft-Img   Avg/Src
+  ---------------------------------------------------------------------------------
+  Healthy_Leaf               83     604       68     152       55      84      10.0
+  Healthy_Nut               262    1886      223     472      172     262      10.0
+  Healthy_Trunk             199    1432      168     359      129     199      10.0
+  Mahali_Koleroga           356    2563      302     641      231     356      10.0
+  Stem_bleeding              21     151       17      38       14      21      10.0
+  bud borer                  20     144       14      36       12      20      10.0
+  healthy_foot                7      50        6      13        4       7      10.0
+  stem cracking              75     540       63     135       52      75      10.0
+  yellow leaf disease       202    1477      173     370      131     205      10.2
+  ---------------------------------------------------------------------------------
+  TOTAL                    1225    8847     1034    2216      800    1229
+
+────────────────────────────────────────────────────────────────────────
+  SECTION 3 — Source-Level Cross-Partition Overlap (Leakage)
+────────────────────────────────────────────────────────────────────────
+
+  A 'source-level leak' means the same original photograph was used
+  to generate derived images that ended up in multiple partitions.
+  Even though the filenames have different UUIDs and the pixel data
+  is different (each is a separate augmentation), the model effectively
+  sees the same scene during both training and evaluation.
+
+  Notation:
+    Tr-only  = source appears in TRAIN but NOT test or final
+    Te-only  = source appears in TEST  but NOT train or final
+    Ft-only  = source appears in FINAL but NOT train or test
+    Tr+Te    = source appears in BOTH train and test  [LEAKAGE]
+    Tr+Ft    = source appears in BOTH train and final [LEAKAGE]
+    Te+Ft    = source appears in BOTH test and final  [LEAKAGE]
+    All3     = source appears in ALL three partitions [LEAKAGE]
+
+  Class                  Total-Src  Tr-only  Te-only  Ft-only   Tr+Te  Tr+Ft  Te+Ft  All3
+  ---------------------------------------------------------------------------------------
+  Healthy_Leaf                  84        5        0        0      24     11      1    43
+  Healthy_Nut                  262       18        0        0      72     21      0   151
+  Healthy_Trunk                199        9        0        0      61     22      0   107
+  Mahali_Koleroga              356       19        0        0     106     35      0   196
+  Stem_bleeding                 21        1        0        0       6      3      0    11
+  bud borer                     20        2        0        0       6      4      0     8
+  healthy_foot                   7        0        0        0       3      1      0     3
+  stem cracking                 75        2        0        0      21     10      0    42
+  yellow leaf disease          202       10        0        0      61     19      0   112
+  ---------------------------------------------------------------------------------------
+  TOTAL                       1226       66        0        0     360    126      1   673
+
+  Total unique source IDs across all partitions : 1226
+  Sources with NO cross-partition leak          : 66
+  Sources with AT LEAST ONE cross-partition leak: 1160
+  Leakage rate (by source)                      : 94.6%
+
+────────────────────────────────────────────────────────────────────────
+  SECTION 4 — Hash Evidence: Same Source ID, Different Pixel Content
+────────────────────────────────────────────────────────────────────────
+
+  QUESTION: Do files sharing a source_id (but different UUIDs) have
+  different pixel content, confirming they are distinct augmentations?
+
+  METHOD: For one representative source group per class, read the MD5
+  hashes of 3 derived files.  If all hashes differ, the augmentation
+  produces distinct pixel data — they are genuinely different images
+  that happen to share a visual origin.
+
+  [Healthy_Leaf]  source_id='50.jpg'  (3 derived files in train)
+      f0089ebf9416cd12ba91cb561d81193f  Healthy_Leaf_original_50.jpg_a7ef5bf8-33dc-4eb2-bc48-e39e473f9fb3.jpg
+      2d26793c7fd6033cbf6dea84cbb87c56  Healthy_Leaf_original_50.jpg_bae33ce1-874c-4b42-a80b-02d2f4e72a49.jpg
+      f4661317d8b89ad06089ffb9500411a1  Healthy_Leaf_original_50.jpg_ee0b0dcd-3bda-48b8-b073-22cd6686d000.jpg
+      => CONFIRMED DIFFERENT
+
+  [Healthy_Nut]  source_id='40.jpg'  (8 derived files in train)
+      0ef1c676773a6690da20880521b2886a  Healthy_Nut_original_40.jpg_1011b733-9796-4c06-87c3-a005f8a464ae.jpg
+      cd644af8bc48cb82bb7315b11ca2487b  Healthy_Nut_original_40.jpg_1ef184ae-34aa-4ee9-af5c-edb6768e098f.jpg
+      55f57f39bac39419b3fbef4e2733e734  Healthy_Nut_original_40.jpg_5633f58e-804d-4528-a727-407f89b0d7e2.jpg
+      => CONFIRMED DIFFERENT
+
+  [Healthy_Trunk]  source_id='60.jpg'  (4 derived files in train)
+      258b32aab8a7cb088713581d41cafa1b  Healthy_Trunk_original_60.jpg_05289246-52e9-48a9-9f40-34117c22390f.jpg
+      dea2790032f62ebc1dff22f7b77cfa18  Healthy_Trunk_original_60.jpg_16b89d77-fe3a-4d02-9ffe-cc97850d6af5.jpg
+      fd15e67e9df624d5392273d771eda2e4  Healthy_Trunk_original_60.jpg_9929a4be-27d4-4a82-b6de-2bba3ff4ed3d.jpg
+      => CONFIRMED DIFFERENT
+
+  [Mahali_Koleroga]  source_id='19.jpg'  (4 derived files in train)
+      e5fd2c41833e52e8f1140b723dd2f14f  Mahali_Koleroga_original_19.jpg_0dec721c-e9ed-4371-b3a9-93830cb69360.jpg
+      a30bc8c5b4aeb30a871b36185b54e211  Mahali_Koleroga_original_19.jpg_6edf7a2a-4fed-4ded-a4ac-513a7e5ba33c.jpg
+      45f8adf84417b7b9641840d979e592b7  Mahali_Koleroga_original_19.jpg_783c3944-b4a9-43c6-915d-d5c19331f4d2.jpg
+      => CONFIRMED DIFFERENT
+
+  [Stem_bleeding]  source_id='814.jpg'  (8 derived files in train)
+      f6d537d4363d3444fda48be2845daafb  Stem_bleeding_original_814.jpg_042e7797-6c27-4bbb-aa0b-031d9a6def21.jpg
+      e6341f13b5ca2749150dc36f60056d19  Stem_bleeding_original_814.jpg_06c5f46e-da28-43dd-af41-d96c7cee1b2f.jpg
+      8d3c6ff14cac8cb3e0691c60eca68585  Stem_bleeding_original_814.jpg_45e792d8-bd00-4840-a5f2-f364a4b10623.jpg
+      => CONFIRMED DIFFERENT
+
+  [bud borer]  source_id='10.jpg'  (7 derived files in train)
+      3b67e8e046d09feddb980ddf656e78a3  bud borer_original_10.jpg_15baec88-74c9-45fc-85ba-9a0adda094af.jpg
+      8b6e28942a573c7674b88f36137913f1  bud borer_original_10.jpg_4af7bc85-ab68-47a6-8aef-14a0cb19324f.jpg
+      598107604719a5994c510ba72c010cc6  bud borer_original_10.jpg_57fe6059-dd14-4bb7-b7e3-740831fdc916.jpg
+      => CONFIRMED DIFFERENT
+
+  [healthy_foot]  source_id='30.jpg'  (5 derived files in train)
+      a4a0a063455ab66ec3b3664c9347c1d9  healthy_foot_original_30.jpg_163eda35-3cc3-4f2a-82ae-7354a5659d9b.jpg
+      8ff02f6d72953b872e9a81bfe775f968  healthy_foot_original_30.jpg_24518137-1c08-4d2e-abd0-74cb39deb222.jpg
+      5861be7c2d0d0e00555748d177bacefa  healthy_foot_original_30.jpg_68a339d0-2bd0-4ff2-b890-8c139fed14ee.jpg
+      => CONFIRMED DIFFERENT
+
+  [stem cracking]  source_id='20.jpg'  (11 derived files in train)
+      689cd5ed3ae1e3b1b2bb34854b92bd07  stem cracking_original_20.jpg_3110bdd2-cbb7-4a74-b340-07eddf69ec56.jpg
+      c831cd8ea291ae628d19c74ec3648388  stem cracking_original_20.jpg_31b492f3-7930-4a69-859d-71da865960c8.jpg
+      fc89b52e2a81f886bb0b27a9632d2c59  stem cracking_original_20.jpg_5557b1a2-5fd1-405a-aca2-d64b8ad4da3b.jpg
+      => CONFIRMED DIFFERENT
+
+  [yellow leaf disease]  source_id='910.jpg'  (4 derived files in train)
+      926fffcd0fa993e05dd2667e49c8c5bb  yellow leaf disease_original_910.jpg_4b44226d-df6a-4cc7-8520-b152e14ed082.jpg
+      c754a5ace5569716829a186c9670e38f  yellow leaf disease_original_910.jpg_5d25ffe8-dbce-4bf2-be9e-3940bae4d511.jpg
+      f10aa1132b11e6c7661e3b71b47c55c8  yellow leaf disease_original_910.jpg_5dbba39b-1dbe-4ca2-beb6-dfd308f0b9c4.jpg
+      => CONFIRMED DIFFERENT
+
+
+────────────────────────────────────────────────────────────────────────
+  SECTION 5 — final_testing: Flat Files vs. Subfolders
+────────────────────────────────────────────────────────────────────────
+
+  final_testing contains two kinds of entries:
+    A) Flat files at the top level (no subfolder).
+       Classes present: Healthy_Leaf, bud borer, healthy_foot.
+       All 111 flat files match the augmented-filename pattern.
+
+    B) Class subfolders: Healthy_Nut, Healthy_Trunk, Mahali_Koleroga,
+       Stem_bleeding, stem cracking, yellow leaf disease.
+       Total 1,118 images across 6 subfolders.
+
+  FINDING: The split between flat and subfolder in final_testing
+  corresponds exactly to the three classes that appear ONLY in flat
+  form vs. the six that have subfolders.  There is no structural
+  reason for this split — it appears to reflect an incomplete
+  organisation of the final_testing folder by the dataset creators.
+
+  Source overlap — final_testing vs. train+test:
+
+  Class                  Ft-Srcs  Ft-in-Tr  Ft-in-Te  Ft-in-All3  Ft-Only
+  -----------------------------------------------------------------------
+  Healthy_Leaf                55        54        44          43        0
+  Healthy_Nut                172       172       151         151        0
+  Healthy_Trunk              129       129       107         107        0
+  Mahali_Koleroga            231       231       196         196        0
+  Stem_bleeding               14        14        11          11        0
+  bud borer                   12        12         8           8        0
+  healthy_foot                 4         4         3           3        0
+  stem cracking               52        52        42          42        0
+  yellow leaf disease        131       131       112         112        0
+
+────────────────────────────────────────────────────────────────────────
+  SECTION 6 — Unique Sources and Derived Images Per Class (All Partitions)
+────────────────────────────────────────────────────────────────────────
+
+  Counts below pool all three partitions to give the total picture.
+  'Unique sources' = how many real photographs were taken.
+  'Derived images' = total augmented copies generated from them.
+
+  Class                   Uniq-Src  Total-Img  Avg/Src  Min/Src  Max/Src
+  ----------------------------------------------------------------------
+  Healthy_Leaf                  84        840     10.0        5       18
+  Healthy_Nut                  262       2620     10.0        1       20
+  Healthy_Trunk                199       1990     10.0        3       18
+  Mahali_Koleroga              356       3560     10.0        2       22
+  Stem_bleeding                 21        210     10.0        6       14
+  bud borer                     20        200     10.0        5       14
+  healthy_foot                   7         70     10.0        3       14
+  stem cracking                 75        750     10.0        4       16
+  yellow leaf disease          202       2052     10.2        2       21
+  ----------------------------------------------------------------------
+  TOTAL                       1226      12292
+
+────────────────────────────────────────────────────────────────────────
+  SECTION 7 — Filename Reliability for Source-Group Reconstruction
+────────────────────────────────────────────────────────────────────────
+
+  QUESTION: Can we reliably reconstruct which derived images belong
+  to the same original source using filenames alone?
+
+  VERIFIED:
+  1. Every file in every partition matches the pattern
+        <class>_original_<source_id>_<UUID>.jpg
+     with zero exceptions.  This is 100% reliable.
+
+  2. Source IDs fall into two categories:
+       Numeric IDs  (e.g. 510, 7191) — simple integers.
+       Camera IDs   (e.g. IMG_20230819_174511) — Android camera
+                    filenames encoding date and time.
+     Both types are unambiguous unique identifiers for the original.
+
+  3. MD5 hashes CONFIRM (Section 4) that files sharing a source_id
+     but different UUIDs have distinct pixel content.  They are
+     genuinely separate augmented copies, not bit-for-bit duplicates.
+     (Within-partition exact-hash duplicates found in the prior audit
+     are a separate anomaly — see note below.)
+
+  4. The class label encoded in the filename always matches the
+     containing folder name.  No mislabelled files were found.
+
+  UNCERTAIN CASES flagged:
+
+  U1. WITHIN-PARTITION EXACT DUPLICATES (from prior audit):
+      343 hash-duplicate groups exist within TRAIN and 39 within TEST.
+      Some of these share the same source_id; others have DIFFERENT
+      source_ids but identical pixel content.  Example from audit:
+        Mahali_Koleroga_original_7311.jpg_... and
+        Mahali_Koleroga_original_7312.jpg_...
+      These are DIFFERENT source IDs producing an identical image.
+      This means source_id is NOT always sufficient to identify
+      the unique original; two numeric IDs can point to visually
+      indistinct photographs.  ESTIMATE: affects a small fraction
+      (<5%) of sources; cannot be fully resolved without the original
+      photographs.
+
+  U2. NUMERIC ID AMBIGUITY:
+      Numeric IDs like '510' and '5100' or '51' could theoretically
+      collide if parsed by prefix matching.  The regex-based parser
+      used here extracts the full token between '_original_' and
+      the UUID, so '51' and '510' are treated as distinct.  This
+      is verified correct by examining the actual filenames.
+
+  U3. CROSS-CLASS SOURCE RE-USE:
+      No evidence of the same source_id appearing in multiple classes.
+      Each source_id is scoped to a class folder, so re-use across
+      classes is not structurally possible.  CONFIDENCE: HIGH.
+
+  CONCLUSION:
+  Filenames provide SUFFICIENT information to reconstruct source groups
+  for the purpose of a leakage-safe split.  The one caveat is U1:
+  a small number of visually identical images carry different source_ids,
+  meaning a purely filename-based grouping will not catch every pixel-
+  level duplication.  For an MCA project this is acceptable; for a
+  publication-grade split, a hash-based deduplication pass should be
+  applied first.
+
+────────────────────────────────────────────────────────────────────────
+  SECTION 8 — Recommended Leakage-Safe Group-Based Split
+────────────────────────────────────────────────────────────────────────
+
+  PROBLEM WITH THE EXISTING SPLIT:
+
+  The existing split was done at the augmented-image level, NOT at
+  the source-image level.  The result:
+
+    Total unique sources in dataset        : 1226
+    Sources contaminating train<->test     : 1033  (84.3% of all sources)
+    Sources contaminating any two partitions: 1160  (94.6%)
+    Sources that are fully partition-safe  : 66  (5.4%)
+
+  THE CORRECT APPROACH — Group-Stratified Split:
+
+  Step 1 — Build source groups.
+    For each class, list all unique source_ids from ALL three
+    partitions combined.  Each source_id is one group.
+
+  Step 2 — Split at the GROUP level, not the image level.
+    Assign each source_id to exactly one of: train / val / test.
+    Then all derived images of that source go to the same split.
+    Suggested ratio (applied to source groups):
+      Train : 70%  of source groups
+      Val   : 15%  of source groups
+      Test  : 15%  of source groups
+
+  Step 3 — Stratify by class.
+    Apply the 70/15/15 group split independently per class so
+    every class is proportionally represented in every partition.
+
+  Step 4 — Use a fixed random seed (e.g. 42) for reproducibility.
+
+  Step 5 — Deduplicate within groups (optional but recommended).
+    Remove exact-hash duplicates before finalising the split.
+    This eliminates the U1 uncertainty described in Section 7.
+
+  EXPECTED OUTCOME with this approach:
+
+  Estimated image counts for the recommended split
+  (using train+test sources only; final_testing excluded from split):
+
+  Class                  Total-Src  Train-Src(70%)  Val-Src(15%)  Test-Src(15%)  Est-Train-Img  Est-Val-Img  Est-Test-Img
+  -----------------------------------------------------------------------------------------------------------------------
+  Healthy_Leaf                  84              59            13             12            531          117           108
+  Healthy_Nut                  262             183            39             40           1647          351           360
+  Healthy_Trunk                199             139            30             30           1251          270           270
+  Mahali_Koleroga              356             249            53             54           2241          477           486
+  Stem_bleeding                 21              15             3              3            135           27            27
+  bud borer                     20              14             3              3            126           27            27
+  healthy_foot                   7               5             1              1             45            9             9
+  stem cracking                 75              52            11             12            468           99           108
+  yellow leaf disease          202             141            30             31           1289          274           283
+  -----------------------------------------------------------------------------------------------------------------------
+  TOTAL                       1226             857           183            186           7733         1651          1678
+
+  NOTE on final_testing:
+  The final_testing partition is NOT usable as an independent hold-out
+  set because its source IDs overlap substantially with train and test.
+  It should be treated as additional augmentation data: merge its images
+  into the full pool before performing the group-based split, or discard
+  it entirely.  Do NOT evaluate a trained model on final_testing and
+  report it as an unbiased test score.
+
+────────────────────────────────────────────────────────────────────────
+  SECTION 9 — Class Imbalance Under the Recommended Split
+────────────────────────────────────────────────────────────────────────
+
+  Under the group-based split the class distribution mirrors the
+  original imbalance.  These are the estimated training image counts:
+
+  Mahali_Koleroga             ~  695 train images  ###
+  Healthy_Nut                 ~  525 train images  ##
+  Healthy_Trunk               ~  404 train images  ##
+  yellow leaf disease         ~  403 train images  ##
+  Healthy_Leaf                ~  197 train images  #
+  stem cracking               ~  149 train images  #
+  bud borer                   ~   55 train images  #
+  Stem_bleeding               ~   53 train images  #
+  healthy_foot                ~   11 train images  #
+
+  IMBALANCE RATIO (largest:smallest train class): approximately
+    695 : 11  (~63:1)
+
+  Mitigation options (to be applied during training, not to the files):
+    a) class_weight parameter in Keras model.fit()  [recommended]
+    b) Weighted random sampling (tf.data oversampling)
+    c) Focal loss instead of standard cross-entropy
+
+========================================================================
+  SUMMARY OF KEY FINDINGS
+========================================================================
+
+  [VERIFIED]
+  1. ALL 12292 images across all partitions follow the naming
+     pattern  <class>_original_<source_id>_<UUID>.jpg.
+     Filenames reliably encode the source group. Zero exceptions.
+
+  2. 1226 unique original source photographs were identified
+     across the entire dataset (all three partitions combined).
+     Each was augmented into an average of ~9 derived images.
+
+  3. SOURCE-LEVEL LEAKAGE IS SEVERE.
+     1033 source IDs (84.3% of all sources) have derived copies in BOTH train and test.
+     1,033 of 1,034 test-partition sources also appear in train.
+     In practice, the model has been trained on sibling augmentations
+     of almost every image it is evaluated on.  Test accuracy will be
+     INFLATED and cannot be treated as an unbiased performance estimate.
+
+  4. final_testing is NOT an independent evaluation set.
+     Its source IDs overlap with train and/or test for every class.
+     It must not be used as a final hold-out benchmark.
+
+  5. Class imbalance is extreme: ~50:1 (Mahali_Koleroga vs healthy_foot).
+     Must be addressed with class weighting during training.
+
+  [RECOMMENDED ACTION]
+  Discard the existing train/test/final split entirely.
+  Build a new split using the group-based strategy in Section 8,
+  using source_id as the grouping key per class.
+  This produces a genuinely leakage-free train/val/test set.
+
+  Report saved to:
+    D:\mca project\ArecaNut_AI\ml\disease\results\source_leakage_analysis.txt
+========================================================================

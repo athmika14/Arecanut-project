@@ -1,0 +1,195 @@
+========================================================================
+  ArecaNut AI — Disease Detection: Leakage-Free Dataset Split
+  Generated : 2026-10-10  19:53:54
+========================================================================
+
+  Strategy  : Group-stratified split at source-ID level per class
+  Ratio     : 70% train / 15% validation / 15% test
+  Seed      : 42 (fixed, reproducible)
+  Pool      : train + test + final_testing (all merged — final_testing
+              has zero independent sources per source_leakage_analysis)
+  Originals : READ-ONLY — no files moved, renamed, or deleted
+
+────────────────────────────────────────────────────────────────────────
+  STEP 0 — Directory Verification
+────────────────────────────────────────────────────────────────────────
+  [OK]  TRAIN: D:\mca project\ArecaNut_AI\ml\disease\dataset\Arecanut_dataset\Arecanut_dataset\train
+  [OK]  TEST: D:\mca project\ArecaNut_AI\ml\disease\dataset\Arecanut_dataset\Arecanut_dataset\test
+  [OK]  FINAL_TESTING: D:\mca project\ArecaNut_AI\ml\disease\dataset\final_testing-20230830T042904Z-001\final_testing
+
+────────────────────────────────────────────────────────────────────────
+  STEP 1 — Collecting All Image Records
+────────────────────────────────────────────────────────────────────────
+
+  Total image records collected : 12292
+  No collection issues.
+
+────────────────────────────────────────────────────────────────────────
+  STEP 2 — Class Label Verification
+────────────────────────────────────────────────────────────────────────
+
+  Classes found in pool : 9
+    Healthy_Leaf                      840 images
+    Healthy_Nut                      2620 images
+    Healthy_Trunk                    1990 images
+    Mahali_Koleroga                  3560 images
+    Stem_bleeding                     210 images
+    bud borer                         200 images
+    healthy_foot                       70 images
+    stem cracking                     750 images
+    yellow leaf disease              2052 images
+
+  [OK] All 9 expected classes present, no unexpected classes.
+
+────────────────────────────────────────────────────────────────────────
+  STEP 3 — Source-ID Label Conflict Check
+────────────────────────────────────────────────────────────────────────
+
+  [OK] No source_id is associated with more than one class label.
+
+────────────────────────────────────────────────────────────────────────
+  STEP 4 — Source Groups Per Class
+────────────────────────────────────────────────────────────────────────
+
+  Class                   Sources    Images   Avg/Src    Min    Max
+  -----------------------------------------------------------------
+  Healthy_Leaf                 84       840      10.0      5     18
+  Healthy_Nut                 262      2620      10.0      1     20
+  Healthy_Trunk               199      1990      10.0      3     18
+  Mahali_Koleroga             356      3560      10.0      2     22
+  Stem_bleeding                21       210      10.0      6     14
+  bud borer                    20       200      10.0      5     14
+  healthy_foot                  7        70      10.0      3     14  <-- LOW SOURCE COUNT
+  stem cracking                75       750      10.0      4     16
+  yellow leaf disease         202      2052      10.2      2     21
+  -----------------------------------------------------------------
+  TOTAL                      1226     12292
+
+────────────────────────────────────────────────────────────────────────
+  STEP 5 — Source-Group Stratified Split (seed=42)
+────────────────────────────────────────────────────────────────────────
+
+  Split warnings:
+  [WARNING] Class 'healthy_foot' has only 7 source(s) — below threshold 10. Val/test sets will be very small.
+
+────────────────────────────────────────────────────────────────────────
+  STEP 6 — Per-Class Split Distribution
+────────────────────────────────────────────────────────────────────────
+
+  Source counts:
+  Class                   Total-Src   Tr-Src   Va-Src   Te-Src    Tr%
+  -------------------------------------------------------------------
+  Healthy_Leaf                   84       59       13       12    70%
+  Healthy_Nut                   262      183       39       40    70%
+  Healthy_Trunk                 199      139       30       30    70%
+  Mahali_Koleroga               356      249       53       54    70%
+  Stem_bleeding                  21       15        3        3    71%
+  bud borer                      20       14        3        3    70%
+  healthy_foot                    7        5        1        1    71%
+  stem cracking                  75       52       11       12    69%
+  yellow leaf disease           202      141       30       31    70%
+  -------------------------------------------------------------------
+  TOTAL                        1226      857      183      186
+
+  Image counts:
+  Class                   Total-Img   Tr-Img   Va-Img   Te-Img    Tr%
+  -------------------------------------------------------------------
+  Healthy_Leaf                  840      583      133      124    69%
+  Healthy_Nut                  2620     1845      383      392    70%
+  Healthy_Trunk                1990     1363      290      337    68%
+  Mahali_Koleroga              3560     2458      546      556    69%
+  Stem_bleeding                 210      151       28       31    72%
+  bud borer                     200      141       28       31    70%
+  healthy_foot                   70       48       11       11    69%
+  stem cracking                 750      513      102      135    68%
+  yellow leaf disease          2052     1412      314      326    69%
+  -------------------------------------------------------------------
+  TOTAL                       12292     8514     1835     1943
+
+  Achieved ratios (images):
+    Train      :  8514  (69.3%)
+    Validation :  1835  (14.9%)
+    Test       :  1943  (15.8%)
+
+────────────────────────────────────────────────────────────────────────
+  STEP 7 — Source-Group Leakage Verification
+────────────────────────────────────────────────────────────────────────
+
+  Checking that no (class, source_id) key appears in more than
+  one partition...
+
+  [PASS] Zero source-group leaks across all three partitions.
+         Every source_id is assigned to exactly one of:
+         train / validation / test.
+
+────────────────────────────────────────────────────────────────────────
+  STEP 8 — Writing CSV Manifests
+────────────────────────────────────────────────────────────────────────
+
+  manifest_train.csv           8514 rows  (1756.7 KB)
+    D:\mca project\ArecaNut_AI\ml\disease\prepared_data\manifest_train.csv
+  manifest_val.csv             1835 rows  (391.4 KB)
+    D:\mca project\ArecaNut_AI\ml\disease\prepared_data\manifest_val.csv
+  manifest_test.csv            1943 rows  (404.0 KB)
+    D:\mca project\ArecaNut_AI\ml\disease\prepared_data\manifest_test.csv
+  manifest_full.csv           12292 rows  (2551.9 KB)
+    D:\mca project\ArecaNut_AI\ml\disease\prepared_data\manifest_full.csv
+
+────────────────────────────────────────────────────────────────────────
+  STEP 9 — Class Imbalance Summary (Training Set)
+────────────────────────────────────────────────────────────────────────
+
+  Mahali_Koleroga                  2458 imgs   28.9%  ########################################
+  Healthy_Nut                      1845 imgs   21.7%  ##############################
+  yellow leaf disease              1412 imgs   16.6%  #######################
+  Healthy_Trunk                    1363 imgs   16.0%  ######################
+  Healthy_Leaf                      583 imgs    6.8%  #########
+  stem cracking                     513 imgs    6.0%  ########
+  Stem_bleeding                     151 imgs    1.8%  ##
+  bud borer                         141 imgs    1.7%  ##
+  healthy_foot                       48 imgs    0.6%  #
+
+  Imbalance ratio (max:min) : 2458:48  (~51:1)
+
+  Recommended mitigation during training (no file changes needed):
+    keras:  class_weight=  computed with sklearn.utils.class_weight
+    keras:  or use tf.data weighted sampling
+    loss:   alternatively use focal loss
+
+========================================================================
+  SUMMARY
+========================================================================
+
+  [VERIFIED]
+  Total images pooled from all 3 original partitions : 12292
+  Unique source groups across all classes            : 1226
+  Label conflicts detected                           : 0
+  Source-group leaks in new split                    : 0
+
+  New split image counts:
+    Train      :   8514  (69.3%)
+    Validation :   1835  (14.9%)
+    Test       :   1943  (15.8%)
+    Total      :  12292
+
+  New split source counts:
+    Train      :    857
+    Validation :    183
+    Test       :    186
+    Total      :   1226
+
+  [WARNING] Classes with too few independent sources for
+  reliable evaluation (< 10 source groups):
+    healthy_foot                    7 sources  val=1  test=1
+
+  These classes are included in the split but their individual
+  per-class precision/recall in val/test may not be meaningful.
+
+  Output files:
+    D:\mca project\ArecaNut_AI\ml\disease\prepared_data\manifest_train.csv
+    D:\mca project\ArecaNut_AI\ml\disease\prepared_data\manifest_val.csv
+    D:\mca project\ArecaNut_AI\ml\disease\prepared_data\manifest_test.csv
+    D:\mca project\ArecaNut_AI\ml\disease\prepared_data\manifest_full.csv
+    D:\mca project\ArecaNut_AI\ml\disease\results\leakage_free_split_report.txt
+
+========================================================================

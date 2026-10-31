@@ -1,0 +1,53 @@
+========================================================================
+  ArecaNut AI — Disease Detection — Test Set Evaluation
+  Generated : 2026-10-17  20:52:03
+========================================================================
+
+  Configuration
+    Model         : MobileNetV2 + custom head
+    Input size    : 224x224 RGB
+    Batch size    : 32
+    Phase 1 epochs trained : 20
+    Phase 2 epochs trained : 7
+    Best val accuracy (P1) : 0.9330
+    Best val accuracy (P2) : 0.9542
+    Random seed   : 42
+    Device        : CPU (Windows native TF>=2.11)
+
+  Dataset
+    Train images  : 8514
+    Val images    : 1835
+    Test images   : 1943
+    Split         : leakage-free source-group stratified
+
+  Test Set Results
+    Accuracy      : 0.9676
+
+  Per-class report (test set):
+                     precision    recall  f1-score   support
+
+       Healthy_Leaf     1.0000    0.9677    0.9836       124
+        Healthy_Nut     0.9948    0.9796    0.9871       392
+      Healthy_Trunk     0.9969    0.9555    0.9758       337
+    Mahali_Koleroga     0.9858    0.9964    0.9911       556
+      Stem_bleeding     0.8158    1.0000    0.8986        31
+          bud borer     0.8750    0.9032    0.8889        31
+       healthy_foot     0.9000    0.8182    0.8571        11
+      stem cracking     0.8442    0.9630    0.8997       135
+yellow leaf disease     0.9497    0.9264    0.9379       326
+
+           accuracy                         0.9676      1943
+          macro avg     0.9291    0.9456    0.9355      1943
+       weighted avg     0.9696    0.9676    0.9680      1943
+
+
+  Limitations
+    - CPU-only training: slower convergence, no GPU acceleration.
+    - healthy_foot: only 7 independent source groups total.
+      Val and test each have 1 source (~10 images).
+      Per-class metrics for this class are not reliable.
+    - Class imbalance ~51:1; mitigated with class_weight.
+    - All images are augmented copies of 1,226 originals.
+      Source-group split prevents leakage but cannot account
+      for potential visual similarity between different sources
+      from the same field/camera session.

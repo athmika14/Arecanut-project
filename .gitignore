@@ -1,0 +1,52 @@
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Node & Frontend dependencies and build output
+node_modules/
+frontend/node_modules/
+frontend/build/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+.cache/
+
+# Environment configurations and secrets
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Local tooling & IDE folders
+.sf/
+.sfdx/
+.vscode/
+.idea/
+
+# Backend uploaded images (retain folder structure)
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# ML raw datasets and archives (> 50MB / multi-gigabyte files)
+ml/**/dataset/
+ml/**/prepared/
+ml/**/prepared_data/
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Operating System temporary files
+.DS_Store
+Thumbs.db
+desktop.ini

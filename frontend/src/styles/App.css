@@ -1,0 +1,90 @@
+/* ============================================================
+   Global Styles — ArecaNut AI
+   Agriculture-themed: deep greens, warm earth tones, clean white
+   ============================================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Primary palette — ArecaNut AI */
+  --green-dark:    #214E34;   /* forest green */
+  --green-mid:     #3a7d44;
+  --green-light:   #73966B;   /* leaf green */
+  --green-pale:    #e8f5e3;
+
+  /* Accent */
+  --amber:         #C77B43;   /* arecanut orange */
+  --amber-light:   #fdf3e0;
+  --amber-border:  #f0c060;
+
+  /* Warm neutrals */
+  --cream:         #F7F4E9;   /* warm cream */
+  --white:         #ffffff;
+  --off-white:     #f9fafb;
+  --gray-100:      #f3f4f6;
+  --gray-300:      #d1d5db;
+  --gray-500:      #6b7280;
+  --gray-700:      #374151;
+  --gray-900:      #111827;
+  --text-main:     #24352A;   /* main text colour */
+
+  /* Shadows */
+  --shadow-sm:     0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md:     0 4px 12px rgba(0,0,0,0.10);
+  --shadow-lg:     0 8px 24px rgba(0,0,0,0.12);
+
+  /* Radii */
+  --radius-sm:     6px;
+  --radius-md:     12px;
+  --radius-lg:     20px;
+
+  /* Typography */
+  --font:          'Inter', system-ui, -apple-system, sans-serif;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font);
+  background-color: var(--off-white);
+  color: var(--text-main);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button {
+  cursor: pointer;
+  font-family: var(--font);
+  border: none;
+  outline: none;
+}
+
+button:focus-visible {
+  outline: 3px solid var(--green-light);
+  outline-offset: 2px;
+}
+
+.main-content {
+  min-height: calc(100vh - 64px);
+}

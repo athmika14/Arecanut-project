@@ -1,0 +1,19 @@
+{
+  "test_accuracy": 0.9675759135357694,
+  "macro_precision": 0.9291242949559947,
+  "macro_recall": 0.9455530244282537,
+  "macro_f1": 0.9355211963928097,
+  "weighted_precision": 0.969574871044002,
+  "weighted_recall": 0.9675759135357694,
+  "weighted_f1": 0.9680029998998398,
+  "phase1_epochs_trained": 20,
+  "phase2_epochs_trained": 7,
+  "best_val_accuracy_p1": 0.9329700469970703,
+  "best_val_accuracy_p2": 0.9542234539985657,
+  "train_images": 8514,
+  "val_images": 1835,
+  "test_images": 1943,
+  "seed": 42,
+  "model_path": "d:\\mca project\\ArecaNut_AI\\ml\\disease\\models\\mobilenetv2_best.keras",
+  "generated": "2026-10-17T20:52:03.498083"
+}

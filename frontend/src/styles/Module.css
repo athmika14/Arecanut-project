@@ -1,0 +1,647 @@
+/* ============================================================
+   Module Page Styles (shared by Disease Detection & Harvest Readiness)
+   ============================================================ */
+
+.module-page {
+  min-height: calc(100vh - 64px);
+  background-color: var(--off-white);
+}
+
+/* ── Header Band ── */
+.module-header {
+  padding: 2.5rem 2rem 2rem;
+  color: var(--white);
+  position: relative;
+}
+
+.disease-header {
+  background: linear-gradient(135deg, var(--green-dark), var(--green-mid));
+}
+
+.harvest-header {
+  background: linear-gradient(135deg, #7a4f10, var(--amber));
+}
+
+.back-btn {
+  background: rgba(255, 255, 255, 0.18);
+  color: var(--white);
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.9rem;
+  font-size: 0.88rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  display: inline-block;
+  transition: background 0.18s;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.module-title {
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.module-subtitle {
+  font-size: 1rem;
+  opacity: 0.88;
+}
+
+/* ── Body ── */
+.module-body {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+/* ── Upload Area ── */
+.upload-area {
+  border: 2px dashed var(--gray-300);
+  border-radius: var(--radius-md);
+  background: var(--white);
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: border-color 0.2s, background 0.2s;
+  overflow: hidden;
+}
+
+.upload-area:hover {
+  border-color: var(--green-light);
+  background-color: var(--green-pale);
+}
+
+.upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  padding: 2rem;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+}
+
+.upload-icon {
+  font-size: 2.8rem;
+  margin-bottom: 0.25rem;
+}
+
+.upload-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--gray-700);
+}
+
+.upload-hint {
+  font-size: 0.88rem;
+  color: var(--gray-500);
+}
+
+.upload-formats {
+  font-size: 0.8rem;
+  color: var(--gray-500);
+  margin-top: 0.5rem;
+  background: var(--gray-100);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+}
+
+/* Hidden real file input */
+.file-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Image Preview ── */
+.preview-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  gap: 0.75rem;
+}
+
+.image-preview {
+  max-height: 280px;
+  border-radius: var(--radius-sm);
+  object-fit: contain;
+  box-shadow: var(--shadow-sm);
+}
+
+.remove-btn {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-radius: var(--radius-sm);
+  padding: 0.3rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: background 0.15s;
+  z-index: 1;
+}
+
+.remove-btn:hover {
+  background: #fecaca;
+}
+
+/* ── Analyse Button ── */
+.analyse-btn {
+  padding: 0.85rem 2rem;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--white);
+  width: 100%;
+  transition: opacity 0.18s, transform 0.15s;
+}
+
+.analyse-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.analyse-btn:not(:disabled):hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.disease-analyse-btn {
+  background-color: var(--green-mid);
+}
+
+.harvest-analyse-btn {
+  background-color: var(--amber);
+}
+
+/* ── Info Notice Box ── */
+.notice-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  background: var(--amber-light);
+  border: 1px solid var(--amber-border);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+}
+
+.notice-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.notice-box strong {
+  display: block;
+  color: var(--gray-900);
+  margin-bottom: 0.3rem;
+  font-size: 0.95rem;
+}
+
+.notice-box p {
+  font-size: 0.88rem;
+  color: var(--gray-700);
+  line-height: 1.55;
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .module-header {
+    padding: 1.75rem 1.25rem 1.5rem;
+  }
+
+  .module-body {
+    padding: 1.5rem 1rem;
+  }
+}
+
+/* ── Loading state on the analyse button ── */
+.analyse-btn--loading {
+  opacity: 0.75;
+  cursor: wait;
+  position: relative;
+}
+
+/* ── Error box ── */
+.error-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  background: #fff1f2;
+  border: 1px solid #fda4af;
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+}
+
+.error-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.error-box p {
+  font-size: 0.9rem;
+  color: #9f1239;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ── Result card — base ── */
+.result-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  border-left: 5px solid var(--green-mid);
+  box-shadow: var(--shadow-md);
+  padding: 1.25rem 1.5rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+/* ── Result card — disease theme (red) ── */
+.result-card--disease {
+  background: #fef7f7;                          /* subtle pale-red background */
+  border-left-color: #c0392b;                  /* red border */
+  box-shadow: 0 4px 12px rgba(192, 57, 43, 0.15);
+}
+
+.result-card--disease .result-class {
+  color: #922b21;                              /* dark-red disease name */
+}
+
+.result-card--disease .result-confidence strong {
+  color: #922b21;
+}
+
+.result-card--disease .result-confidence-bar-fill {
+  background: linear-gradient(90deg, #c0392b, #e74c3c);
+}
+
+.result-card--disease .score-item--top {
+  background: #fdeaea;                          /* pale red highlight */
+  border-left-color: #e74c3c;                  /* red accent */
+}
+
+.result-card--disease .score-item--top .score-name,
+.result-card--disease .score-item--top .score-value {
+  color: #922b21;                              /* dark red */
+}
+
+.result-card--disease .score-item--top .score-bar {
+  background: #c0392b;
+}
+
+.result-card--disease .score-badge {
+  color: #e74c3c;
+}
+
+/* ── Result card — healthy theme (green) ── */
+.result-card--healthy {
+  background: var(--green-pale);               /* subtle pale-green background */
+  border-left-color: var(--green-dark);        /* forest green border */
+  box-shadow: 0 4px 12px rgba(45, 90, 39, 0.15);
+}
+
+.result-card--healthy .result-class {
+  color: var(--green-dark);                    /* dark-green healthy name */
+}
+
+.result-card--healthy .result-confidence strong {
+  color: var(--green-dark);
+}
+
+.result-card--healthy .result-confidence-bar-fill {
+  background: linear-gradient(90deg, var(--green-dark), var(--green-light));
+}
+
+.result-card--healthy .score-item--top {
+  background: #d4edcc;                          /* slightly stronger green highlight */
+  border-left-color: var(--green-dark);
+}
+
+.result-card--healthy .score-item--top .score-name,
+.result-card--healthy .score-item--top .score-value {
+  color: var(--green-dark);
+}
+
+.result-card--healthy .score-item--top .score-bar {
+  background: var(--green-mid);
+}
+
+.result-card--healthy .score-badge {
+  color: var(--green-dark);
+}
+
+/* ── Result card — unknown fallback (neutral green) ── */
+.result-card--unknown {
+  /* falls back to base .result-card styles */
+}
+
+/* ── Predicted class header (single row: name left, badge right) ── */
+.result-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.result-header-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.result-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+  line-height: 1;
+  margin-top: 0.1rem;
+}
+
+.result-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gray-500);
+  margin-bottom: 0.2rem;
+}
+
+.result-class {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--green-dark);
+  margin: 0 0 0.2rem;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+.result-confidence {
+  font-size: 0.85rem;
+  color: var(--gray-700);
+  margin: 0;
+}
+
+.result-confidence strong {
+  color: var(--green-dark);
+  font-weight: 700;
+}
+
+/* ── Status badge ── */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 100px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+  white-space: nowrap;
+  align-self: flex-start;
+  margin-top: 0.2rem;
+}
+
+.status-badge-icon {
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.status-badge--disease {
+  background: #fdeaea;
+  color: #922b21;
+  border: 1.5px solid #e74c3c;
+}
+
+.status-badge--healthy {
+  background: var(--green-pale);
+  color: var(--green-dark);
+  border: 1.5px solid var(--green-mid);
+}
+
+/* ── Top-class confidence bar ── */
+.result-confidence-bar-section {
+  margin-top: -0.15rem;
+}
+
+.result-confidence-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--gray-100);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.result-confidence-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green-mid), var(--green-light));
+  border-radius: 5px;
+  transition: width 0.4s ease;
+}
+
+/* ── AI advisory note ── */
+.result-advisory {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  background: var(--amber-light);
+  border: 1px solid var(--amber-border);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.85rem;
+  font-size: 0.78rem;
+  color: var(--gray-700);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.result-advisory-icon {
+  font-size: 0.95rem;
+  flex-shrink: 0;
+  margin-top: 0.05rem;
+}
+
+/* ── All class scores section ── */
+.result-scores-section {
+  border-top: 1px solid var(--gray-300);
+  padding-top: 0.7rem;
+}
+
+.result-scores-heading {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--gray-500);
+  margin-bottom: 0.65rem;
+}
+
+.score-list {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  list-style: none;
+  padding: 0;
+}
+
+.score-item {
+  display: grid;
+  grid-template-columns: 9.5rem 1fr 4rem;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.82rem;
+  padding: 0.25rem 0.35rem;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s;
+}
+
+.score-item:not(.score-item--top):hover {
+  background: var(--off-white);
+}
+
+/* ── Highlighted top class: forest green + orange accent ── */
+.score-item--top {
+  background: var(--green-pale);
+  border-left: 3px solid var(--amber);
+  padding-left: 0.5rem;
+  font-weight: 600;
+}
+
+.score-item--top .score-name {
+  font-weight: 700;
+  color: var(--green-dark);
+}
+
+.score-item--top .score-value {
+  color: var(--green-dark);
+  font-weight: 700;
+}
+
+.score-badge {
+  color: var(--amber);
+  font-size: 0.7rem;
+  margin-right: 0.35rem;
+  vertical-align: middle;
+}
+
+.score-name {
+  color: var(--gray-700);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.score-bar-wrap {
+  background: var(--gray-100);
+  border-radius: 5px;
+  height: 9px;
+  overflow: hidden;
+}
+
+.score-bar {
+  height: 100%;
+  background: var(--green-light);
+  border-radius: 5px;
+  transition: width 0.4s ease;
+  min-width: 1px;
+}
+
+.score-item--top .score-bar {
+  background: var(--green-mid);
+}
+
+.score-value {
+  text-align: right;
+  color: var(--gray-500);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Disclaimer note below result ── */
+.result-note {
+  font-size: 0.75rem;
+  color: var(--gray-500);
+  line-height: 1.5;
+  border-top: 1px solid var(--gray-300);
+  padding-top: 0.65rem;
+  margin: 0;
+}
+
+/* ── Responsive — desktop and mobile ── */
+@media (max-width: 600px) {
+  .result-card {
+    padding: 1rem 0.9rem 0.85rem;
+    gap: 0.7rem;
+  }
+
+  .result-header {
+    gap: 0.6rem;
+  }
+
+  .result-class {
+    font-size: 1.15rem;
+  }
+
+  .result-icon {
+    font-size: 1.7rem;
+  }
+
+  .status-badge {
+    font-size: 0.74rem;
+    padding: 0.3rem 0.6rem;
+    margin-top: 0;
+  }
+
+  .score-item {
+    grid-template-columns: 7rem 1fr 3.2rem;
+    font-size: 0.76rem;
+    gap: 0.45rem;
+  }
+
+  .result-advisory {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.7rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .score-item {
+    grid-template-columns: 5.5rem 1fr 3rem;
+    font-size: 0.72rem;
+  }
+
+  .result-class {
+    font-size: 1.05rem;
+  }
+
+  .result-icon {
+    font-size: 1.5rem;
+  }
+}
+
+/* ── Content-guard error (invalid image, not a plant) ── */
+.error-box--guard {
+  background: #fef2f2;
+  border-color: #dc2626;
+}
+
+.error-box--guard p {
+  color: #b91c1c;
+}

@@ -1,0 +1,351 @@
+======================================================================
+  ArecaNut AI — Disease Detection Dataset Audit
+  Generated : 2026-10-10 15:28:35
+======================================================================
+
+── Directory Checks ──────────────────────────────────────────────────
+  [   OK    ] DATASET ROOT: d:\mca project\ArecaNut_AI\ml\disease\dataset
+  [   OK    ] TRAIN: d:\mca project\ArecaNut_AI\ml\disease\dataset\Arecanut_dataset\Arecanut_dataset\train
+  [   OK    ] TEST: d:\mca project\ArecaNut_AI\ml\disease\dataset\Arecanut_dataset\Arecanut_dataset\test
+  [   OK    ] FINAL_TESTING: d:\mca project\ArecaNut_AI\ml\disease\dataset\final_testing-20230830T042904Z-001\final_testing
+
+── Step 1 & 3: Class Image Counts and Extensions ────────────────────
+
+  Classes found : 9
+  ['Healthy_Leaf', 'Healthy_Nut', 'Healthy_Trunk', 'Mahali_Koleroga', 'Stem_bleeding', 'bud borer', 'healthy_foot', 'stem cracking', 'yellow leaf disease']
+
+  Image extensions in train/test: ['.jpg']
+
+  Class                   Train     Test     Total
+  ------------------------------------------------
+  Healthy_Leaf              604      152       756
+  Healthy_Nut              1886      472      2358
+  Healthy_Trunk            1432      359      1791
+  Mahali_Koleroga          2563      641      3204
+  Stem_bleeding             151       38       189
+  bud borer                 144       36       180
+  healthy_foot               50       13        63
+  stem cracking             540      135       675
+  yellow leaf disease      1477      370      1847
+  ------------------------------------------------
+  TOTAL                    8847     2216     11063
+
+── Step 7: Class Consistency Check ──────────────────────────────────
+  [OK] All 9 classes present in both train and test.
+
+  Naming style observations (raw class names):
+    'Healthy_Leaf' : mixed case
+    'Healthy_Nut' : mixed case
+    'Healthy_Trunk' : mixed case
+    'Mahali_Koleroga' : mixed case
+    'Stem_bleeding' : mixed case
+    'bud borer' : contains space, all lower
+    'healthy_foot' : all lower
+    'stem cracking' : contains space, all lower
+    'yellow leaf disease' : contains space, all lower
+
+── Step 2: final_testing Folder Structure ───────────────────────────
+
+  Top-level flat image files : 111
+  Class subfolders found     : 6
+  Subfolder names            : ['Healthy_Nut', 'Healthy_Trunk', 'Mahali_Koleroga', 'Stem_bleeding', 'stem cracking', 'yellow leaf disease']
+
+  Flat files — inferred class distribution:
+    Healthy_Leaf                   :   84 images
+    bud borer                      :   20 images
+    healthy_foot                   :    7 images
+  Extensions in flat files   : ['.jpg']
+
+  Subfolder image counts:
+    Healthy_Nut                    :  262 images
+    Healthy_Trunk                  :  199 images
+    Mahali_Koleroga                :  356 images
+    Stem_bleeding                  :   21 images
+    stem cracking                  :   75 images
+    yellow leaf disease            :  205 images
+  Subfolder total            : 1118
+
+  Total images in final_testing (flat + subfolders): 1229
+
+── Step 6: Augmentation / Derived Filename Analysis ─────────────────
+
+  FINAL_TESTING flat files:
+    Files with '_original_' in name : 111 / 111
+    Files with UUID suffix          : 111 / 111
+
+  Pattern: <class>_original_<source_filename>_<UUID>.jpg
+  FINDING: All flat files in final_testing appear to be augmented/
+           derived copies generated from original source images.
+           Each source image has been used to produce multiple derived
+           files (identified by unique UUID suffix).
+
+  Sample flat filenames (first 5):
+    Healthy_Leaf_original_510.jpg_aee3e293-c79c-48b6-9c88-198b98e5fde0.jpg
+    Healthy_Leaf_original_510.jpg_e8c61892-2c49-4b30-a555-bbf47aaeb164.jpg
+    Healthy_Leaf_original_511.jpg_4259138a-666d-4201-863e-83dc4345d9e4.jpg
+    Healthy_Leaf_original_511.jpg_c653963c-e6ed-47fc-be78-f9ffa2336754.jpg
+    Healthy_Leaf_original_511.jpg_ce22d2d5-3215-4e46-8cca-d6fd2ccfc6ed.jpg
+
+  Train/Test filename augmentation check:
+    Train files with augmentation markers : 8847 / 8847
+    Test  files with augmentation markers : 2216  / 2216
+
+── Step 5: Corrupted / Unreadable Image Check ───────────────────────
+  Verifying train images...
+  Verifying test images...
+  Verifying final_testing flat images...
+
+  Corrupt/unreadable — train       : 0
+  Corrupt/unreadable — test        : 0
+  Corrupt/unreadable — final_testing: 0
+  Total corrupt                    : 0
+  [OK] No corrupted or unreadable images found.
+
+── Steps 4 & 8: Duplicate and Leakage Detection (MD5 Hashes) ────────
+  Computing hashes (this may take a moment)...
+
+  ── Within-partition duplicates ──
+    Within TRAIN        : 343 duplicate hash groups
+    Within TEST         : 39 duplicate hash groups
+    Within FINAL_TESTING: 7 duplicate hash groups
+
+  ── Cross-partition leakage ──
+    TRAIN ↔ TEST leakage          : 159 shared images
+    TRAIN ↔ FINAL_TESTING leakage : 93 shared images
+    TEST  ↔ FINAL_TESTING leakage : 19 shared images
+    All three partitions          : 14 shared images
+
+  [CONCERN] TRAIN ↔ TEST leakage — showing up to 10 of 159:
+    Hash: 3c50b595c54b6e3de03f8564fd0eeabd
+      [TRAIN] Healthy_Leaf  →  Healthy_Leaf_original_51.jpg_f3da5869-d091-4130-813e-6f3da49f64f8.jpg
+      [TEST] Healthy_Leaf  →  Healthy_Leaf_original_51.jpg_c595199b-e3c2-463f-8c9e-5a513a7f473c.jpg
+    Hash: 3669cb54cb0c22a6a3e39164812e0d9f
+      [TRAIN] Healthy_Leaf  →  Healthy_Leaf_original_510.jpg_455dd9c4-9c3c-4f7a-947d-dc5fb20485f9.jpg
+      [TEST] Healthy_Leaf  →  Healthy_Leaf_original_510.jpg_98d3a0c9-e6db-4539-bf7f-c4193f1eee8e.jpg
+    Hash: da9be06551832eb9c5fb0aa3fb4f726f
+      [TRAIN] Healthy_Leaf  →  Healthy_Leaf_original_524.jpg_26d9db50-babb-44e9-9d10-8077ecb4b8c9.jpg
+      [TRAIN] Healthy_Leaf  →  Healthy_Leaf_original_524.jpg_d76d7735-0417-44bf-b241-9f027d01c439.jpg
+      [TEST] Healthy_Leaf  →  Healthy_Leaf_original_524.jpg_3afd14b0-07a5-4ad9-8ae7-212ccbcc1211.jpg
+    Hash: 2c82d6f2938c69a1729e3ab5606c4761
+      [TRAIN] Healthy_Leaf  →  Healthy_Leaf_original_553.jpg_b4ebe95a-9387-4771-9ab9-3f9dfecd6002.jpg
+      [TEST] Healthy_Leaf  →  Healthy_Leaf_original_553.jpg_75376997-aca1-4ef0-b96f-6e113db93575.jpg
+    Hash: dbac0d04649d5f3d05833185b4209f9a
+      [TRAIN] Healthy_Leaf  →  Healthy_Leaf_original_558.jpg_3eda851a-20e1-4413-91d0-32edd3e08397.jpg
+      [TEST] Healthy_Leaf  →  Healthy_Leaf_original_558.jpg_b1f5d070-79af-4c68-a82b-469fb8034991.jpg
+    Hash: c17c87df3bb0295a6b4e2795b7969cd5
+      [TRAIN] Healthy_Leaf  →  Healthy_Leaf_original_560.jpg_24965540-7e3c-44fd-a034-f5b1cb4f2b6b.jpg
+      [TRAIN] Healthy_Leaf  →  Healthy_Leaf_original_560.jpg_5738a18e-7df8-4906-8e4d-8c13d147ecb5.jpg
+      [TEST] Healthy_Leaf  →  Healthy_Leaf_original_560.jpg_6fffcd28-cc9f-42e9-b8f4-3a609b6456c9.jpg
+    Hash: c01957c15adab831fdc27e9c99121729
+      [TRAIN] Healthy_Leaf  →  Healthy_Leaf_original_571.jpg_2229e137-e887-44f5-91af-987c5484e720.jpg
+      [TEST] Healthy_Leaf  →  Healthy_Leaf_original_571.jpg_f94a2726-a9ce-43be-a166-b7f5fcabff5f.jpg
+    Hash: ac4965bbdfc41fa5eba89704acdcea94
+      [TRAIN] Healthy_Leaf  →  Healthy_Leaf_original_573.jpg_4fee0b7a-ed25-4b2b-8d8f-5271ee07d911.jpg
+      [TEST] Healthy_Leaf  →  Healthy_Leaf_original_573.jpg_5ad5e32a-1167-4a2f-825c-9a74b14cb82c.jpg
+    Hash: 3e156417f5387b520fb4e30e15a5816c
+      [TRAIN] Healthy_Leaf  →  Healthy_Leaf_original_59.jpg_ded20ca5-54aa-4451-88cd-d9ae849ccc04.jpg
+      [TRAIN] Healthy_Leaf  →  Healthy_Leaf_original_59.jpg_e8ead456-a677-422b-9a48-a66e3b6577a9.jpg
+      [TEST] Healthy_Leaf  →  Healthy_Leaf_original_59.jpg_ef7af87f-9430-48ad-b962-08085adb02ac.jpg
+    Hash: 29666a14c8dc023c469c632fcf7f5464
+      [TRAIN] Healthy_Leaf  →  Healthy_Leaf_original_IMG_20230819_174511.jpg_5b1a9677-4b3d-4cdb-8199-d5fa850bc43f.jpg
+      [TEST] Healthy_Leaf  →  Healthy_Leaf_original_IMG_20230819_174511.jpg_c818e4e9-05a8-4c6a-8299-8b7153fec7b9.jpg
+
+  [CONCERN] TRAIN ↔ FINAL_TESTING leakage — showing up to 10 of 93:
+    Hash: aee18347303b67e2c7cd7be232d9a896
+      [TRAIN] Healthy_Leaf  →  Healthy_Leaf_original_570.jpg_225753d0-d235-4131-97f0-ce4ad472658e.jpg
+      [TRAIN] Healthy_Leaf  →  Healthy_Leaf_original_570.jpg_be0963bb-b897-4154-b958-22d2e98b2fe4.jpg
+      [FINAL_TESTING_flat] Healthy_Leaf  →  Healthy_Leaf_original_570.jpg_adecd08c-32aa-4a6a-911e-f0a1d692ef1a.jpg
+    Hash: 9043ab357ca8474d41a6ce709d67b296
+      [TRAIN] Healthy_Nut  →  Healthy_Nut_original_4146.jpg_34366238-820e-4390-9560-3ae44fb4f612.jpg
+      [FINAL_TESTING_subfolder] Healthy_Nut  →  Healthy_Nut_original_4146.jpg_7909d233-c7aa-40db-a623-37e3ea3df4d7.jpg
+    Hash: 2c735d76a585f5c917795178eab797be
+      [TRAIN] Healthy_Nut  →  Healthy_Nut_original_4150.jpg_11e8c9d1-1ab8-49cf-86ae-c9ba1b801015.jpg
+      [FINAL_TESTING_subfolder] Healthy_Nut  →  Healthy_Nut_original_4150.jpg_b8899f5d-17b9-4a4d-a0fc-3936cfb5f842.jpg
+    Hash: e9f9922d0fc2efd9730a94a8e2d8bd1d
+      [TRAIN] Healthy_Nut  →  Healthy_Nut_original_4150.jpg_53df1423-c2f7-4835-8b46-77d3870c131e.jpg
+      [TRAIN] Healthy_Nut  →  Healthy_Nut_original_4150.jpg_f946a7d1-9b35-4d5e-8312-f70e99419489.jpg
+      [FINAL_TESTING_subfolder] Healthy_Nut  →  Healthy_Nut_original_4150.jpg_b8755b9b-331b-4a08-bc78-c4ca1efe8244.jpg
+    Hash: 8cfa968b18678cba031991bd5ce92ea8
+      [TRAIN] Healthy_Nut  →  Healthy_Nut_original_416.jpg_5a970d0c-ce22-4641-8bad-a05f24deebe4.jpg
+      [FINAL_TESTING_subfolder] Healthy_Nut  →  Healthy_Nut_original_445.jpg_2ee56968-fba5-4beb-9e60-98605cf6d641.jpg
+    Hash: 6fe8ea0b35d36e9993d5139fdc102e63
+      [TRAIN] Healthy_Nut  →  Healthy_Nut_original_4165.jpg_b3a9bb8e-c8ab-4f74-902d-79ada09f0897.jpg
+      [FINAL_TESTING_subfolder] Healthy_Nut  →  Healthy_Nut_original_4165.jpg_edc926bb-d9b1-4b7f-a197-324960156666.jpg
+    Hash: f49a5720acc2c09703e291b4a7c7f895
+      [TRAIN] Healthy_Nut  →  Healthy_Nut_original_4168.jpg_8b00fbd4-9dbe-4ba0-885e-96bcb3cbca3d.jpg
+      [TRAIN] Healthy_Nut  →  Healthy_Nut_original_4179.jpg_d4b410cc-535a-49fc-84f5-8d1c62c3890b.jpg
+      [FINAL_TESTING_subfolder] Healthy_Nut  →  Healthy_Nut_original_4179.jpg_97866fc8-1827-4bf8-9b78-c9b7ff1ff60f.jpg
+    Hash: c0822978bfe2de2a7ff40a161a6f9738
+      [TRAIN] Healthy_Nut  →  Healthy_Nut_original_4171.jpg_cf4c44b0-40c5-4f0c-9020-6f36b31ff493.jpg
+      [FINAL_TESTING_subfolder] Healthy_Nut  →  Healthy_Nut_original_4171.jpg_70bb967c-9131-4253-8d85-14b12e7d83ef.jpg
+    Hash: c7a3e05bf7fa324500ae8b737b724948
+      [TRAIN] Healthy_Nut  →  Healthy_Nut_original_4174.jpg_8fa7195d-a061-4636-bc05-7814ae1374ad.jpg
+      [TRAIN] Healthy_Nut  →  Healthy_Nut_original_4174.jpg_c02a5635-aad0-4f81-b356-c1dbceb55cee.jpg
+      [TRAIN] Healthy_Nut  →  Healthy_Nut_original_4174.jpg_fcfc041d-5960-40b7-bf3f-3d68b7ed0e03.jpg
+      [FINAL_TESTING_subfolder] Healthy_Nut  →  Healthy_Nut_original_4174.jpg_e3731e73-7ae7-4cd8-a2a7-1b8eff1e01d0.jpg
+    Hash: 4b2d9f304276ea49271710bc35ea8cfb
+      [TRAIN] Healthy_Nut  →  Healthy_Nut_original_4176.jpg_fa01312a-2002-4864-b256-c5f56c2ad2b8.jpg
+      [FINAL_TESTING_subfolder] Healthy_Nut  →  Healthy_Nut_original_4176.jpg_55f1e01c-2aab-412c-b67c-5cca1719745b.jpg
+
+  [CONCERN] TEST ↔ FINAL_TESTING leakage — showing up to 10 of 19:
+    Hash: 38f503a77aac404fdc26029d1a90afb3
+      [TEST] Healthy_Leaf  →  Healthy_Leaf_original_533.jpg_c55d37ef-bad0-41d9-bc25-3b737384c17c.jpg
+      [FINAL_TESTING_flat] Healthy_Leaf  →  Healthy_Leaf_original_533.jpg_78a1767d-94eb-4f29-9512-f418db27721d.jpg
+      [FINAL_TESTING_flat] Healthy_Leaf  →  Healthy_Leaf_original_533.jpg_ea7403b0-4bd4-4043-bdc8-3db5b3a716bb.jpg
+    Hash: dcfbb8a82bb6d1faa3aae7abc966da86
+      [TEST] Healthy_Leaf  →  Healthy_Leaf_original_553.jpg_2ed525fb-6699-413f-8974-948f102b6e7f.jpg
+      [FINAL_TESTING_flat] Healthy_Leaf  →  Healthy_Leaf_original_553.jpg_e812f788-2313-4679-8b8f-4079d93f925a.jpg
+    Hash: ba34caf62271cd40f3cc7666aae769af
+      [TEST] Healthy_Leaf  →  Healthy_Leaf_original_IMG_20230819_174009.jpg_fde788e7-b890-44ca-a87a-30af94886553.jpg
+      [FINAL_TESTING_flat] Healthy_Leaf  →  Healthy_Leaf_original_IMG_20230819_174009.jpg_47fcbaf5-7ec6-41ee-a6b5-eb59d224e7bc.jpg
+    Hash: 9a53c591768958491221d0d08e6b3b6c
+      [TEST] Healthy_Nut  →  Healthy_Nut_original_414.jpg_b51d0789-0e03-4876-a461-e5785347d3ce.jpg
+      [FINAL_TESTING_subfolder] Healthy_Nut  →  Healthy_Nut_original_414.jpg_cb415f68-87d1-4eb5-b374-1a07898b5995.jpg
+    Hash: 0e04e2b4c6c0305b07ecbddf08149f63
+      [TEST] Healthy_Nut  →  Healthy_Nut_original_427.jpg_8ae2bb48-b6d1-4681-85ca-34f916290db5.jpg
+      [FINAL_TESTING_subfolder] Healthy_Nut  →  Healthy_Nut_original_427.jpg_a07db696-6168-4909-a345-d94b74f9f9fb.jpg
+    Hash: ce85268742ae51ab03e81916ac5995c8
+      [TEST] Healthy_Nut  →  Healthy_Nut_original_459.jpg_4bfa892a-06e8-4e5d-90bc-0faf1774c07d.jpg
+      [FINAL_TESTING_subfolder] Healthy_Nut  →  Healthy_Nut_original_459.jpg_e4f7cff0-9a7d-4d88-b487-132968a05d13.jpg
+    Hash: dffe855109b7c57f062743ab1c1ddca6
+      [TEST] Healthy_Nut  →  Healthy_Nut_original_493.jpg_37fee421-fe4c-4441-bf6d-07fd7b010c63.jpg
+      [FINAL_TESTING_subfolder] Healthy_Nut  →  Healthy_Nut_original_493.jpg_cc97b731-19e8-4237-91cd-570375892565.jpg
+    Hash: 8089eca220fc2df0fe88d2c6bf4ebddc
+      [TEST] Healthy_Nut  →  Healthy_Nut_original_IMG_20230819_173446.jpg_e09c0753-a7f0-453e-8bd3-60fc97652416.jpg
+      [FINAL_TESTING_subfolder] Healthy_Nut  →  Healthy_Nut_original_IMG_20230819_173446.jpg_aa9f177a-49ce-4ad0-9cd9-88c399db8af1.jpg
+    Hash: 16715e8f711ad04fbbe77b4b1cdc55c4
+      [TEST] Healthy_Nut  →  Healthy_Nut_original_IMG_20230819_173643.jpg_2caa7fd5-1bdb-4a2f-a7fc-e64519c8b9a8.jpg
+      [FINAL_TESTING_subfolder] Healthy_Nut  →  Healthy_Nut_original_IMG_20230819_173643.jpg_cff340f1-51dd-4489-a9e9-6d1a2fef73a3.jpg
+    Hash: dd29263f2fced696ccd8eb8243bd2fe9
+      [TEST] Healthy_Trunk  →  Healthy_Trunk_original_6116.jpg_263a3b72-559f-4098-ab22-a8407c15e21f.jpg
+      [FINAL_TESTING_subfolder] Healthy_Trunk  →  Healthy_Trunk_original_6116.jpg_bbaeebb5-25ac-4af2-bb25-59478decf465.jpg
+
+  [CONCERN] All-three leakage — showing up to 10 of 14:
+    Hash: e592677abc423bc9f735bac03213a94f
+      [TRAIN] Healthy_Nut  →  Healthy_Nut_original_418.jpg_1a36ff0f-57bf-4cfd-8d7c-a671074284e0.jpg
+      [TEST] Healthy_Nut  →  Healthy_Nut_original_418.jpg_5d7f35db-43ba-4736-9670-4f9858165115.jpg
+      [FINAL_TESTING_subfolder] Healthy_Nut  →  Healthy_Nut_original_418.jpg_1a1d3a79-ae0f-4ae5-8ea3-9efb0aa8cefd.jpg
+    Hash: b1754b2afc4a8dc4ef14e0369ad32dfb
+      [TRAIN] Healthy_Nut  →  Healthy_Nut_original_425.jpg_ba3007e5-64d0-404b-9026-b011a8a61467.jpg
+      [TRAIN] Healthy_Nut  →  Healthy_Nut_original_436.jpg_6e2aaf70-64f7-4d0a-803f-5407c66a8ff9.jpg
+      [TRAIN] Healthy_Nut  →  Healthy_Nut_original_436.jpg_9eeaacba-7013-4074-9f5b-220987c22e9e.jpg
+      [TEST] Healthy_Nut  →  Healthy_Nut_original_436.jpg_e83d535d-3b39-44df-9d0c-ac59bf701b9b.jpg
+      [FINAL_TESTING_subfolder] Healthy_Nut  →  Healthy_Nut_original_436.jpg_993d1c98-c9d3-4c75-923b-573c42d27797.jpg
+      [FINAL_TESTING_subfolder] Healthy_Nut  →  Healthy_Nut_original_436.jpg_ddb05474-a6dc-47f3-8638-7e126eefa877.jpg
+    Hash: 6baa1a745893dfd58fbb23880f2c4ee9
+      [TRAIN] Healthy_Trunk  →  Healthy_Trunk_original_684.jpg_39a47e0b-dfbf-43d6-b5c8-97ff2bf2484d.jpg
+      [TEST] Healthy_Trunk  →  Healthy_Trunk_original_684.jpg_9bf46dd4-fa1a-4601-8b18-85069b9ab721.jpg
+      [FINAL_TESTING_subfolder] Healthy_Trunk  →  Healthy_Trunk_original_684.jpg_10822c5b-6fef-4402-90fc-557f96ad4285.jpg
+    Hash: 975796be2f229386a830e40662d416b3
+      [TRAIN] Mahali_Koleroga  →  Mahali_Koleroga_original_7191.jpg_18faddde-86bb-4e54-8486-02848dd139f1.jpg
+      [TRAIN] Mahali_Koleroga  →  Mahali_Koleroga_original_7191.jpg_bf24f174-2ff1-496e-88f9-5b58ce2277a8.jpg
+      [TEST] Mahali_Koleroga  →  Mahali_Koleroga_original_7191.jpg_5e18a6d0-3f98-4bdb-858f-c952baad7e60.jpg
+      [FINAL_TESTING_subfolder] Mahali_Koleroga  →  Mahali_Koleroga_original_7191.jpg_6e4ea3e5-235d-4018-9dc1-64c98e72dc7a.jpg
+    Hash: ef7b38fe8817f0c13ff5ffd6c6abc9bd
+      [TRAIN] Mahali_Koleroga  →  Mahali_Koleroga_original_7310.jpg_bf25e384-a936-429c-9eed-6b58ae649c0f.jpg
+      [TEST] Mahali_Koleroga  →  Mahali_Koleroga_original_7310.jpg_637733be-16ba-4d2c-9bac-ebfaac8888c0.jpg
+      [FINAL_TESTING_subfolder] Mahali_Koleroga  →  Mahali_Koleroga_original_7310.jpg_d861eb2a-8ce4-4598-a6fd-948c1b68d5fc.jpg
+    Hash: 9875ab256552b92a928e45e9add06ac3
+      [TRAIN] Mahali_Koleroga  →  Mahali_Koleroga_original_7312.jpg_66cc50c1-26f5-4e38-99dd-d17d20e939e2.jpg
+      [TEST] Mahali_Koleroga  →  Mahali_Koleroga_original_7311.jpg_2e8b6565-6992-4f03-ad24-9d7c19b99f27.jpg
+      [FINAL_TESTING_subfolder] Mahali_Koleroga  →  Mahali_Koleroga_original_7311.jpg_b841ea52-fee9-4743-92cf-fbeabab8e5ca.jpg
+    Hash: a22cbda4f80a6b4b232548d4c337a8d3
+      [TRAIN] Mahali_Koleroga  →  Mahali_Koleroga_original_752.jpg_b8030864-5d49-48fc-8458-18e36c538cc4.jpg
+      [TRAIN] Mahali_Koleroga  →  Mahali_Koleroga_original_754.jpg_1aedebbf-7ed2-43e5-85c1-270d1c7fbecc.jpg
+      [TEST] Mahali_Koleroga  →  Mahali_Koleroga_original_754.jpg_6f615d54-7252-4d6d-b8b5-2748d498fc17.jpg
+      [FINAL_TESTING_subfolder] Mahali_Koleroga  →  Mahali_Koleroga_original_754.jpg_0cd57b95-3d58-402e-9cdf-f230e34d51bc.jpg
+    Hash: 2842ae0ad539fda5fb8390a045de981a
+      [TRAIN] Mahali_Koleroga  →  Mahali_Koleroga_original_790.jpg_a852ae7a-72ff-4c3a-a21b-f968a9d3f701.jpg
+      [TRAIN] Mahali_Koleroga  →  Mahali_Koleroga_original_790.jpg_fc718ca0-fea6-4def-a335-a6d39ee858e7.jpg
+      [TEST] Mahali_Koleroga  →  Mahali_Koleroga_original_779.jpg_b806ed77-c908-43cd-9d9d-57c8c224b3e7.jpg
+      [FINAL_TESTING_subfolder] Mahali_Koleroga  →  Mahali_Koleroga_original_779.jpg_64975c13-343b-4c6f-9875-e2ffa25306f7.jpg
+    Hash: 76773883a3a4b63f3584714896042992
+      [TRAIN] Stem_bleeding  →  Stem_bleeding_original_IMG_20230820_103626.jpg_c7c7f2a0-0091-44ff-9c89-5ffc3c53192a.jpg
+      [TEST] Stem_bleeding  →  Stem_bleeding_original_IMG_20230820_103626.jpg_3d85cee4-1ce9-45a7-af53-fdfae08fe63d.jpg
+      [FINAL_TESTING_subfolder] Stem_bleeding  →  Stem_bleeding_original_IMG_20230820_103626.jpg_612b7444-e196-47b5-bd22-e67ad8fd613e.jpg
+    Hash: 8ff02f6d72953b872e9a81bfe775f968
+      [TRAIN] healthy_foot  →  healthy_foot_original_30.jpg_24518137-1c08-4d2e-abd0-74cb39deb222.jpg
+      [TEST] healthy_foot  →  healthy_foot_original_30.jpg_36f76b9b-2044-4a57-9c75-9b81de770215.jpg
+      [TEST] healthy_foot  →  healthy_foot_original_30.jpg_7c9d7ac2-707e-4adc-9fd1-5209bf151ea7.jpg
+      [FINAL_TESTING_flat] healthy_foot  →  healthy_foot_original_30.jpg_22b8782c-ae93-47d9-a124-34732f48bff9.jpg
+
+  [CONCERN] 343 duplicate image(s) within TRAIN (showing first 5):
+    Hash: 852be4f5cb2dd445e5769bcace102985
+      Healthy_Leaf → Healthy_Leaf_original_51.jpg_5760b002-442c-4e73-aef1-41df2c80116d.jpg
+      Healthy_Leaf → Healthy_Leaf_original_51.jpg_7bf3e25b-bea2-4928-9657-a00414086e62.jpg
+    Hash: 9326d7330cdef5568b8d7ae5f51f198d
+      Healthy_Leaf → Healthy_Leaf_original_513.jpg_78d63f12-4ebe-47a7-9de6-aab20f3f98bb.jpg
+      Healthy_Leaf → Healthy_Leaf_original_513.jpg_bf02c06c-fceb-4c47-b331-a96cd3e49fde.jpg
+      Healthy_Leaf → Healthy_Leaf_original_513.jpg_e3f2e0a7-b35e-4414-888b-1830316a8d29.jpg
+    Hash: da9be06551832eb9c5fb0aa3fb4f726f
+      Healthy_Leaf → Healthy_Leaf_original_524.jpg_26d9db50-babb-44e9-9d10-8077ecb4b8c9.jpg
+      Healthy_Leaf → Healthy_Leaf_original_524.jpg_d76d7735-0417-44bf-b241-9f027d01c439.jpg
+    Hash: d5db15adc3e727ba998506c63a883071
+      Healthy_Leaf → Healthy_Leaf_original_524.jpg_28885ddb-4d76-4ade-b361-8d66fdad14c1.jpg
+      Healthy_Leaf → Healthy_Leaf_original_524.jpg_6f7294f7-62de-4db5-aecc-78871924a94f.jpg
+    Hash: 7d7ea72893caebf96961bd2904cef736
+      Healthy_Leaf → Healthy_Leaf_original_53.jpg_749c02bf-ba33-4e42-b051-0afcec901eba.jpg
+      Healthy_Leaf → Healthy_Leaf_original_53.jpg_a05be982-d548-4bba-8ca7-e32df062a6db.jpg
+      Healthy_Leaf → Healthy_Leaf_original_53.jpg_f46acd34-a143-4002-839f-cb1b1df349f0.jpg
+
+  [CONCERN] 39 duplicate image(s) within TEST (showing first 5):
+    Hash: a47780c2b9299652d9b4f8479156eb8a
+      Healthy_Nut → Healthy_Nut_original_471.jpg_f06f8479-9599-4f8b-b1b6-6496ac8b1fb2.jpg
+      Healthy_Nut → Healthy_Nut_original_482.jpg_2d9aa7ce-2b04-4888-b239-3e2a1a36d60e.jpg
+    Hash: 544c3065a676ee41a78262420b3a8c6f
+      Healthy_Trunk → Healthy_Trunk_original_612.jpg_8066f237-f6a2-4991-a8d8-509ae1743568.jpg
+      Healthy_Trunk → Healthy_Trunk_original_612.jpg_dde43638-c311-41b3-8c23-972a12a92f88.jpg
+    Hash: 3004555761ff5f3832259ebd04f51764
+      Mahali_Koleroga → Mahali_Koleroga_original_7148.jpg_4778272c-178e-4ce3-86cb-735561c0da5a.jpg
+      Mahali_Koleroga → Mahali_Koleroga_original_7149.jpg_0d04453d-9537-4b6f-8ef1-517c37c187b5.jpg
+    Hash: 7c445a8782d729e873ceb69f99727a86
+      Mahali_Koleroga → Mahali_Koleroga_original_7181.jpg_12a9cc88-d3d0-4c42-a4db-6b1b25411c68.jpg
+      Mahali_Koleroga → Mahali_Koleroga_original_7182.jpg_4772bba3-0bbb-4a3d-9d01-923653ef55d0.jpg
+    Hash: beff49787230769f8b3c05b99f18f9df
+      Mahali_Koleroga → Mahali_Koleroga_original_7252.jpg_346d731b-a622-4b9d-95e7-d002a5b15462.jpg
+      Mahali_Koleroga → Mahali_Koleroga_original_7252.jpg_b4fe574b-1d7f-4468-91f7-822058da0110.jpg
+
+── Non-image Files ───────────────────────────────────────────────────
+  Total non-image files across all partitions: 0
+  [OK] No unexpected non-image files found.
+
+======================================================================
+  AUDIT SUMMARY
+======================================================================
+
+  Disease classes (train+test)    : 9
+  Total TRAIN images              : 8847
+  Total TEST images               : 2216
+  Total FINAL_TESTING images      : 1229
+  Grand total (all partitions)    : 12292
+
+  Pillow verification available   : True
+  Corrupt / unreadable images     : 0
+  TRAIN↔TEST leakage (exact dup)  : 159
+  TRAIN↔FINAL leakage             : 93
+  TEST↔FINAL leakage              : 19
+  Within-TRAIN duplicates         : 343
+  Within-TEST duplicates          : 39
+  Within-FINAL duplicates         : 7
+
+  VERIFIED FINDINGS:
+  • 9 disease classes, identical set in train and test.
+  • Class naming is inconsistent: mixed case, spaces, underscores
+    (e.g. 'bud borer', 'Healthy_Leaf', 'yellow leaf disease').
+    This WILL cause issues with Keras flow_from_directory unless
+    handled explicitly or normalised before training.
+  • final_testing contains ONLY augmented/derived images.
+    Filenames encode the source: <class>_original_<src>_<UUID>.jpg.
+    It is NOT a clean independent hold-out set.
+
+  POSSIBLE CONCERNS (require your decision):
+  • Class imbalance may exist — check per-class counts above.
+  • final_testing should NOT be used as a final evaluation set
+    without first verifying no source images were also used for
+    augmenting the train/test split.
+  • Inconsistent capitalisation in class names may need
+    normalisation before training.
+
+======================================================================
+  Report saved to: d:\mca project\ArecaNut_AI\ml\disease\results\dataset_audit.txt
+======================================================================
